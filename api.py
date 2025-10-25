@@ -26,7 +26,7 @@ CORS(app)
 def welcome():
     return "Hello! :3"
     
-@app.route('/createUser')
+@app.route('/createUser', methods=["POST"])
 def createUser():
     body = request.get_json()
     if not body:
