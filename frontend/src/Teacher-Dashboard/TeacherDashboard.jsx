@@ -17,9 +17,9 @@ const TeacherDashboard = () => {
 
     // --- Mock Data ---
     const mockStudents = [
-        { id: 101, name: 'Sara Lee', attendance: '95%', points: 120, company: 'Adobe' },
-        { id: 102, name: 'Espy Chen', attendance: '100%', points: 150, company: 'AWS' },
-        { id: 103, name: 'Faith Kim', attendance: '85%', points: 80, company: 'DaVita' },
+        { id: 101, name: 'Bruno Mars', attendance: '95%', points: 120, company: 'Adobe' },
+        { id: 102, name: 'Lady Gaga', attendance: '100%', points: 150, company: 'AWS' },
+        { id: 103, name: 'Shawn Mendes', attendance: '85%', points: 80, company: 'DaVita' },
         { id: 104, name: 'Frodo Baggins', attendance: '90%', points: 110, company: 'IMA' },
         { id: 105, name: 'Bo Peep', attendance: '100%', points: 130, company: 'Adobe' },
         { id: 106, name: 'Sven Reindeer', attendance: '75%', points: 60, company: 'Accenture' },
