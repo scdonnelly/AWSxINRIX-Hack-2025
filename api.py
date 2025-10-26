@@ -143,36 +143,18 @@ def findUser():
 
     return jsonify("User not found")
 
-<<<<<<< Updated upstream
 @app.route('/forgot-password', methods=['POST'])
 def forgotpassword():
-=======
-
-@app.route('/reset-password', methods=['POST'])
-def resetPassword():
-
->>>>>>> Stashed changes
     body = request.get_json()
     email = body.get('email')
 
     if not email:
-<<<<<<< Updated upstream
         return "Email required", 400
-=======
-        return "User did not provide email", 400
->>>>>>> Stashed changes
 
     reset_url = f"http://localhost:3000/reset?token=abc123&email={email}"
     send_reset_email(email, reset_url)
 
-<<<<<<< Updated upstream
     return jsonify("Reset email sent"), 200
-=======
-    for user in users:
-        if user["email"] == email:
-            user["password"] = hash
-            return jsonify("Password reset")
->>>>>>> Stashed changes
 
 def send_reset_email(email, reset_url):
     ses = boto3.client('ses',aws_access_key_id, aws_secret_access_key, region_name)
@@ -189,22 +171,7 @@ def send_reset_email(email, reset_url):
             }
         }
     )
-# Handling data
 
-# website -> database
-# Add points via attendance
-# Add points via bonus
-
-# database -> website
-# Rank students and return to the website
-# Return the data of one student
-# Return the data of one event / day
-
-# data storage
-# Add a student to dataset
-# Manually change student data
-# Remove a student 
-# Delete an entire classroom (end of the year)
 
 @app.route('/createStudent', methods=['POST'])
 @tokenRequirement
