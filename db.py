@@ -7,8 +7,7 @@ class StudentData:
         "LastName": 'LastName',
         "assignments": [],
         "bonus_points": [],
-        "Attendance": []
-
+        "Attendence": []
     }
     
     #intialize the connection
@@ -46,19 +45,78 @@ class StudentData:
         else:
             return self.table
 
-#Add Student Data
-    def add_StudentData(company, firstName, lastName):
+
+    def get_data(self, title, year):
+            """
+            Gets movie data from the table for a specific movie.
+
+            :param title: The title of the movie.
+            :param year: The release year of the movie.
+            :return: The data about the requested movie.
+            """
+            try:
+                response = self.table.get_item(Key={"year": year, "title": title})
+            except ClientError as err:
+                logger.error(
+                    "Couldn't get movie %s from table %s. Here's why: %s: %s",
+                    title,
+                    self.table.name,
+                    err.response["Error"]["Code"],
+                    err.response["Error"]["Message"],
+                )
+                raise
+            else:
+                return response["Item"]
+
+    def query_data(self, year):
         """
-        Adds a student record
+        Queries for movies that were released in the specified year.
 
-        :param title: The title of the movie.
-        :param year: The release year of the movie.
-        :param plot: The plot summary of the movie.
-        :param rating: The quality rating of the movie.
+        :param year: The year to query.
+        :return: The list of movies that were released in the specified year.
         """
+        try:
+            response = self.table.query(KeyConditionExpression=Key("year").eq(year))
+        except ClientError as err:
+            logger.error(
+                "Couldn't query for movies released in %s. Here's why: %s: %s",
+                year,
+                err.response["Error"]["Code"],
+                err.response["Error"]["Message"],
+            )
+            raise
+        else:
+            return response["Items"]
+        
+    def update_movie(self, title, year, rating, plot):
+        """
+        Updates rating and plot data for a movie in the table.
 
-       
-
+        :param title: The title of the movie to update.
+        :param year: The release year of the movie to update.
+        :param rating: The updated rating to the give the movie.
+        :param plot: The updated plot summary to give the movie.
+        :return: The fields that were updated, with their new values.
+        """
+        try:
+            response = self.table.update_item(
+                Key={"year": year, "title": title},
+                UpdateExpression="set info.rating=:r, info.plot=:p",
+                ExpressionAttributeValues={":r": Decimal(str(rating)), ":p": plot},
+                ReturnValues="UPDATED_NEW",
+            )
+        except ClientError as err:
+            logger.error(
+                "Couldn't update movie %s in table %s. Here's why: %s: %s",
+                title,
+                self.table.name,
+                err.response["Error"]["Code"],
+                err.response["Error"]["Message"],
+            )
+            raise
+        else:
+            return response["Attributes"]
+        
     def get_data(self, title, year):
             """
             Gets movie data from the table for a specific movie.
@@ -100,68 +158,13 @@ class StudentData:
             )
             raise
 
-
-#Update Student Data
-class Movies:
-    """Encapsulates an Amazon DynamoDB table of movie data.
-
-    Example data structure for a movie record in this table:
-        {
-            "year": 1999,
-            "title": "For Love of the Game",
-            "info": {
-                "directors": ["Sam Raimi"],
-                "release_date": "1999-09-15T00:00:00Z",
-                "rating": 6.3,
-                "plot": "A washed up pitcher flashes through his career.",
-                "rank": 4987,
-                "running_time_secs": 8220,
-                "actors": [
-                    "Kevin Costner",
-                    "Kelly Preston",
-                    "John C. Reilly"
-                ]
-            }
-        }
-    """
-
-    def __init__(self, dyn_resource):
+    #Add Student Data
+    def add_StudentData(company, firstName, lastName):
         """
-        :param dyn_resource: A Boto3 DynamoDB resource.
+        Adds a student record
+
+        :param title: The title of the movie.
+        :param year: The release year of the movie.
+        :param plot: The plot summary of the movie.
+        :param rating: The quality rating of the movie.
         """
-        self.dyn_resource = dyn_resource
-        # The table variable is set during the scenario in the call to
-        # 'exists' if the table exists. Otherwise, it is set by 'create_table'.
-        self.table = None
-
-
-    def update_movie(self, title, year, rating, plot):
-        """
-        Updates rating and plot data for a movie in the table.
-
-        :param title: The title of the movie to update.
-        :param year: The release year of the movie to update.
-        :param rating: The updated rating to the give the movie.
-        :param plot: The updated plot summary to give the movie.
-        :return: The fields that were updated, with their new values.
-        """
-        try:
-            response = self.table.update_item(
-                Key={"year": year, "title": title},
-                UpdateExpression="set info.rating=:r, info.plot=:p",
-                ExpressionAttributeValues={":r": Decimal(str(rating)), ":p": plot},
-                ReturnValues="UPDATED_NEW",
-            )
-        except ClientError as err:
-            logger.error(
-                "Couldn't update movie %s in table %s. Here's why: %s: %s",
-                title,
-                self.table.name,
-                err.response["Error"]["Code"],
-                err.response["Error"]["Message"],
-            )
-            raise
-        else:
-            return response["Attributes"]
-
-
