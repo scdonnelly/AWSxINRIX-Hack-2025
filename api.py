@@ -7,6 +7,7 @@ import requests
 import bcrypt
 import boto3
 from db import StudentData
+from userinfo import UserData
 from decimal import Decimal
 import os
 from dotenv import load_dotenv
@@ -33,7 +34,7 @@ salt = bcrypt.gensalt()
 hash = bcrypt.hashpw(bytes, salt)
 
 test_user = {
-    'username': "Test User",
+    'email': "Test User",
     'password': hash
 }
 
@@ -199,19 +200,19 @@ def update_assignment_score():
 def welcome():
     return "Hello! :3"
     
-@app.route('/createUser', methods=["POST"])
+@app.route('/signup', methods=["POST"])
 def createUser():
     """
-    username = request.form.get('user')
+    email = request.form.get('user')
     password = request.form.get('password')
     """
     body = request.get_json()
     if not body:
         return "User did not provide data", 400
-    username = body.get('user')
+    email = body.get('user')
     password = body.get('password')
-    if not username:
-        return "User did not provide username", 400
+    if not email:
+        return "User did not provide email", 400
     if not password:
         return "User did not provide password", 400
     
@@ -220,28 +221,28 @@ def createUser():
 
     # stored locally for now, must connect to database when possible
     new_user = {
-        'username' : username,
+        'email' : email,
         'password' : hash 
     }
 
     users.append(new_user)
     
-    return jsonify("Welcome " + username), 200
+    return jsonify("Welcome " + email), 200
     
 @app.route('/login', methods=["POST"])
 def findUser():
     """
-    username = request.form.get('user')
+    email = request.form.get('user')
     password = request.form.get('password')
     """
     key = str(request.args.get('key'))
     body = request.get_json()
     if not body:
         return "User did not provide data", 400
-    username = body.get('user')
+    email = body.get('user')
     password = body.get('password')
-    if not username:
-        return "User did not provide username", 400
+    if not email:
+        return "User did not provide email", 400
     if not password:
         return "User did not provide password", 400
     
@@ -249,13 +250,78 @@ def findUser():
     hash = bcrypt.hashpw(bytes, salt)
 
     for user in users:
-        if user["username"] == username:
+        if user["email"] == email:
             if user["password"] == hash:
-                token = jwt.encode({'user': username, 'exp': datetime.datetime.now(datetime.timezone.utc)+datetime.timedelta(hours=24)}, key)
+                token = jwt.encode({'user': email, 'exp': datetime.datetime.now(datetime.timezone.utc)+datetime.timedelta(hours=24)}, key)
                 return jsonify(token)
             return jsonify("Password incorrect")
 
     return jsonify("User not found")
+
+@app.route('/forgot-password', methods=['POST'])
+def forgotpassword():
+    body = request.get_json()
+    email = body.get('email')
+
+    if not email:
+        return "Email required", 400
+
+    reset_url = f"http://localhost:3000/reset?token=abc123&email={email}"
+    send_reset_email(email, reset_url)
+
+    return jsonify("Reset email sent"), 200
+
+def send_reset_email(email, reset_url):
+    ses = boto3.client('ses',aws_access_key_id, aws_secret_access_key, region_name)
+    
+    ses.send_email(
+        Source='scdonnelly@scu.edu',  # Replace with your verified email
+        Destination={'ToAddresses': [email]},
+        Message={
+            'Subject': {'Data': 'Password Reset'},
+            'Body': {
+                'Html': {
+                    'Data': f'<p>Click <a href="{reset_url}">here</a> to reset your password.</p>'
+                }
+            }
+        }
+    )
+
+
+@app.route('/createStudent', methods=['POST'])
+@tokenRequirement
+def addStudent():
+    body = request.get_json()
+    if not body:
+        return "User did not provide data", 400
+    name = body.get('name')
+    if not name:
+        return "User did not provide name", 400
+    points = body.get('points')
+    if not points:
+        points = 0
+    
+    #add student to database
+
+    return jsonify(name + " was added and currently has " + str(points) + " points"), 200
+
+
+
+
+"""
+@app.route('/removeStudent')
+def deleteStudent():
+    body = request.get_json
+    if not body:
+        return "User did not provide data", 400
+    name = body.get('name')
+    if not name:
+        return "User did not provide name", 400
+    
+    # use name to retrive student
+    # probably loop over data and delete - or delete entire row if possible
+
+"""
 
 if __name__ == '__main__':
     app.run(debug=True, port=3000)

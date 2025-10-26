@@ -1,0 +1,633 @@
+/* --- Global Variables --- */
+:root {
+  --primary-color: #007bff;
+  --primary-hover: #0056b3;
+  --text-dark: #222;
+  --text-light: #555;
+  --bg-light: #f9f9f9;
+  --bg-white: #ffffff;
+  --border-radius: 8px;
+}
+
+/* --- Main Dashboard Layout --- */
+.dashboard-container {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  background-color: var(--bg-light);
+}
+
+/* --- Left Column: Navigation Pane --- */
+.nav-pane {
+  width: 280px;
+  background-color: #1a202c;
+  color: #e2e8f0;
+  padding: 25px 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-logo {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-top: 0;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.create-class-btn {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  background-color: var(--primary-color);
+  color: var(--bg-white);
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.create-class-btn:hover {
+  background-color: var(--primary-hover);
+}
+
+.class-list-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #a0aec0;
+  margin-top: 30px;
+  margin-bottom: 10px;
+  padding-left: 10px;
+}
+
+.class-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.class-list-item {
+  width: 100%;
+  padding: 12px 15px;
+  text-align: left;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #e2e8f0;
+  background-color: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.class-list-item:hover {
+  background-color: #2d3748;
+}
+
+.class-list-item.active {
+  background-color: var(--primary-color);
+  color: var(--bg-white);
+  font-weight: 600;
+}
+
+.no-classes-message {
+    text-align: center;
+    font-style: italic;
+    color: #a0aec0;
+    margin-top: 20px;
+}
+
+
+/* --- Right Column: Main Content Display --- */
+.content-pane {
+  flex: 1;
+  box-sizing: border-box;
+}
+
+/* --- Content Header / Top Bar --- */
+.content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+  background-color: var(--bg-white);
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+
+.header-left {
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+}
+
+.header-title {
+  font-size: 1.8rem;
+  color: var(--text-dark);
+  margin: 0;
+}
+
+.join-code {
+  font-size: 0.9rem;
+  font-weight: 600;
+  background-color: #f0f8ff;
+  color: var(--primary-color);
+  padding: 5px 10px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.search-bar {
+  position: relative;
+}
+
+.search-bar input {
+  padding: 10px 15px 10px 40px;
+  font-size: 0.95rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  width: 250px;
+  transition: all 0.3s;
+}
+
+.search-bar input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #777;
+}
+
+/* --- Main Content Area --- */
+.content-main {
+  padding: 30px;
+  background-color: var(--bg-light);
+  flex-grow: 1;
+}
+
+/* Message shown when no class is selected */
+.no-class-selected {
+    text-align: center;
+    padding: 50px 20px;
+    background-color: var(--bg-white);
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-top: 20px;
+}
+.no-class-selected h2 {
+    color: var(--text-dark);
+    margin-bottom: 10px;
+}
+.no-class-selected p {
+    color: var(--text-light);
+}
+
+/* --- Dashboard Hub Styles (Big Buttons) --- */
+.dashboard-hub {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 25px;
+  max-width: 800px;
+  margin-top: 20px;
+}
+
+.hub-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  padding: 40px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  background-color: var(--bg-white);
+  border: 1px solid #e2e8f0;
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.hub-button:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.07);
+  color: var(--primary-color);
+}
+
+.hub-button svg {
+  color: var(--primary-color);
+  transition: all 0.3s;
+}
+
+.hub-button:hover svg {
+  transform: scale(1.1);
+}
+
+/* --- Back Button --- */
+.back-button {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-bottom: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.back-button:hover {
+  text-decoration: underline;
+}
+
+/* --- Student Tab Header & Filter --- */
+.student-tab-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.student-tab-header h3 {
+  font-size: 1.5rem;
+  color: var(--text-dark);
+  margin: 0;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filter-group label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-light);
+}
+
+.filter-group select {
+  font-size: 0.95rem;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: var(--bg-white);
+  cursor: pointer;
+}
+
+.filter-group select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+}
+
+
+/* --- Students Tab Table Styles --- */
+.students-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--bg-white);
+  border-radius: var(--border-radius);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.students-table th,
+.students-table td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.students-table th {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background-color: #fcfcfc;
+}
+
+.students-table td {
+  font-size: 0.95rem;
+  color: var(--text-dark);
+}
+
+.students-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* --- Action Button Styles --- */
+.action-button {
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.action-button.remove {
+  background-color: #fff1f1;
+  color: #d93025;
+}
+
+.action-button.remove:hover {
+  background-color: #fbeaea;
+  color: #b92015;
+}
+
+
+/* --- Modal Styles --- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: var(--bg-white);
+  padding: 30px;
+  border-radius: var(--border-radius);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 450px;
+}
+.modal-content h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  text-align: center;
+  color: var(--text-dark);
+}
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.modal-form-group {
+  display: flex;
+  flex-direction: column;
+}
+.modal-form-group label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-light);
+  margin-bottom: 6px;
+}
+.modal-form-group input,
+.modal-form-group select {
+  font-size: 1rem;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+.modal-button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.modal-button.primary {
+  background-color: var(--primary-color);
+  color: white;
+}
+.modal-button.primary:hover {
+  background-color: var(--primary-hover);
+}
+.modal-button.secondary {
+  background-color: #f0f0f0;
+  color: var(--text-dark);
+}
+.modal-button.secondary:hover {
+  background-color: #e0e0e0;
+}
+
+
+/* --- Attendance Tab Styles --- */
+.attendance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.attendance-header h2 {
+  font-size: 1.5rem;
+  color: var(--text-dark);
+  margin: 0;
+}
+.attendance-table th,
+.attendance-table td {
+  text-align: left;
+  vertical-align: middle;
+}
+.attendance-table th:first-child,
+.attendance-table td:first-child {
+  padding-left: 20px;
+}
+.attendance-dropdown {
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 2px solid #ccc;
+  transition: all 0.3s;
+  cursor: pointer;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url('data:image/svg+xml;utf8,<svg fill="%23333" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 24px;
+}
+.attendance-dropdown[data-status="present"] {
+  background-color: #f0fff4;
+  color: #2f855a;
+  border-color: #9ae6b4;
+}
+.attendance-dropdown[data-status="excused"] {
+  background-color: #fffbeb;
+  color: #b7791f;
+  border-color: #f6e05e;
+}
+.attendance-dropdown[data-status="unexcused"] {
+  background-color: #fff5f5;
+  color: #c53030;
+  border-color: #fc8181;
+}
+.action-button.bonus {
+  background-color: #f0f5ff;
+  color: #4285f4;
+  font-weight: 600;
+}
+.action-button.bonus:hover {
+  background-color: #e6f0ff;
+}
+.submit-attendance-btn {
+  padding: 12px 25px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  background-color: var(--primary-color);
+  color: var(--bg-white);
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background-color 0.3s;
+  display: block;
+  margin-top: 25px;
+  margin-left: auto;
+}
+.submit-attendance-btn:hover {
+  background-color: var(--primary-hover);
+}
+
+/* --- Leaderboard Tab Styles --- */
+.leaderboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.leaderboard-header h2 {
+  font-size: 1.5rem;
+  color: var(--text-dark);
+  margin: 0;
+}
+
+.leaderboard-table .rank-cell {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  text-align: center;
+  width: 80px;
+}
+
+.leaderboard-table .sorted-by {
+  font-weight: 700;
+  background-color: #f8f8f8; /* Light background for sorted column */
+}
+
+/* --- Events Tab Styles --- */
+.events-tab h2 {
+  font-size: 1.5rem;
+  color: var(--text-dark);
+  margin-top: 0; /* Align with other tab titles */
+  margin-bottom: 20px;
+}
+
+.add-event-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+    background-color: var(--bg-white);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.add-event-input {
+    flex-grow: 1; /* Input takes up most space */
+    font-size: 1rem;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+.add-event-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+}
+
+.add-event-button {
+    /* Use primary button style */
+    padding: 12px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    background-color: var(--primary-color);
+    color: var(--bg-white);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+.add-event-button:hover {
+    background-color: var(--primary-hover);
+}
+
+/* --- RE-ADDED: Current Events List Styles --- */
+.current-events-list {
+    background-color: var(--bg-white);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.current-events-list h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: var(--text-dark);
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.current-events-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.current-events-list li {
+    padding: 8px 0;
+    color: var(--text-light);
+    border-bottom: 1px dashed #eee;
+}
+.current-events-list li:last-child {
+    border-bottom: none;
+}
+.current-events-list p { /* Style for the "No events" message */
+    font-style: italic;
+    color: var(--text-light);
+}
