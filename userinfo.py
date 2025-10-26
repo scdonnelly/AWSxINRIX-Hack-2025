@@ -9,7 +9,7 @@ class UserData:
     
     #dictionary
     user_data = {
-        "username": 'username',
+        "email": 'email',
         "password": 'password',
         "role": 'role'
     }
@@ -25,10 +25,10 @@ class UserData:
             self.table = self.dyn_resource.create_table(
                 TableName=table_name,
                 KeySchema=[
-                    {"AttributeName": "username", "KeyType": "HASH"},  # Partition key
+                    {"AttributeName": "email", "KeyType": "HASH"},  # Partition key
                 ],
                 AttributeDefinitions=[
-                    {"AttributeName": "username", "AttributeType": "S"},
+                    {"AttributeName": "email", "AttributeType": "S"},
                 ],
                 BillingMode='PAY_PER_REQUEST',
             )
@@ -45,13 +45,13 @@ class UserData:
             return self.table
 
     #get user data from table
-    def get_data(self, username):
+    def get_data(self, email):
         try:
-            response = self.table.get_item(Key={"username": username})
+            response = self.table.get_item(Key={"email": email})
         except ClientError as err:
             logger.error(
                 "Couldn't get data %s from table %s. Here's why: %s: %s",
-                username,
+                email,
                 self.table.name,
                 err.response["Error"]["Code"],
                 err.response["Error"]["Message"],
@@ -61,11 +61,11 @@ class UserData:
             return response.get("Item")
 
     #Add User
-    def add_user(self, username, password, role):
+    def add_user(self, email, password, role):
         try:
             self.table.put_item(
                 Item={
-                    "username": username,
+                    "email": email,
                     "password": password,
                     "role": role
                 }
@@ -73,7 +73,7 @@ class UserData:
         except ClientError as err:
             logger.error(
                 "Couldn't add user %s to table %s. Here's why: %s: %s",
-                username,
+                email,
                 self.table.name,
                 err.response["Error"]["Code"],
                 err.response["Error"]["Message"],
