@@ -255,3 +255,18 @@ class StudentData:
             }
         )
 
+    def delete_student(self, company, full_name):
+        try:
+            response = self.table.delete_item(
+                Key={"company": company, "FullName": full_name}
+            )
+            return response
+        except ClientError as err:
+            logger.error(
+                "Couldn't delete student %s from table %s. Here's why: %s: %s",
+                full_name,
+                self.table.name,
+                err.response["Error"]["Code"],
+                err.response["Error"]["Message"],
+            )
+            raise
