@@ -1,6 +1,7 @@
 import logging
 from botocore.exceptions import ClientError
 logger = logging.getLogger(__name__)
+from boto3.dynamodb.conditions import Key
 
 class StudentData:
     
@@ -11,7 +12,7 @@ class StudentData:
         "LastName": 'LastName',
         "FullName": 'FullName',
         "assignments": [],
-        "bonus_points": [],
+        "BonusPoints": [],
         "Attendance": []
     }
     
@@ -56,7 +57,7 @@ class StudentData:
             except ClientError as err:
                 logger.error(
                     "Couldn't get data %s from table %s. Here's why: %s: %s",
-                    title,
+                    FullName,
                     self.table.name,
                     err.response["Error"]["Code"],
                     err.response["Error"]["Message"],
@@ -65,19 +66,13 @@ class StudentData:
             else:
                 return response["Item"]
 
-    def query_data(self, year):
-        """
-        Queries for movies that were released in the specified year.
-
-        :param year: The year to query.
-        :return: The list of movies that were released in the specified year.
-        """
+    def query_data(self, company):
         try:
-            response = self.table.query(KeyConditionExpression=Key("year").eq(year))
+            response = self.table.query(KeyConditionExpression=Key("company").eq(company))
         except ClientError as err:
             logger.error(
-                "Couldn't query for movies released in %s. Here's why: %s: %s",
-                year,
+                "Couldn't query for students in %s. Here's why: %s: %s",
+                company,
                 err.response["Error"]["Code"],
                 err.response["Error"]["Message"],
             )
@@ -85,28 +80,20 @@ class StudentData:
         else:
             return response["Items"]
         
-#Update data
-    def update_movie(self, title, year, rating, plot):
-        """
-        Updates rating and plot data for a movie in the table.
-
-        :param title: The title of the movie to update.
-        :param year: The release year of the movie to update.
-        :param rating: The updated rating to the give the movie.
-        :param plot: The updated plot summary to give the movie.
-        :return: The fields that were updated, with their new values.
-        """
+    #Update data
+    def update_data(self, FullName, company, Attendance, BonusPoints, assignments):
+       
         try:
             response = self.table.update_item(
-                Key={"year": year, "title": title},
-                UpdateExpression="set info.rating=:r, info.plot=:p",
-                ExpressionAttributeValues={":r": Decimal(str(rating)), ":p": plot},
+                Key={"company": company, "FullName": FullName},
+                UpdateExpression="set Attendance=:a, BonusPoints=:b, assignments=:as",
+                ExpressionAttributeValues={":a": Attendance, ":b": BonusPoints, ":as": assignments},
                 ReturnValues="UPDATED_NEW",
             )
         except ClientError as err:
             logger.error(
-                "Couldn't update movie %s in table %s. Here's why: %s: %s",
-                title,
+                "Couldn't update student %s in table %s. Here's why: %s: %s",
+                FullName,
                 self.table.name,
                 err.response["Error"]["Code"],
                 err.response["Error"]["Message"],
@@ -114,96 +101,81 @@ class StudentData:
             raise
         else:
             return response["Attributes"]
-#Get Data
-    def get_data(self, title, year):
-            """
-            Gets movie data from the table for a specific movie.
 
-            :param title: The title of the movie.
-            :param year: The release year of the movie.
-            :return: The data about the requested movie.
-            """
-            try:
-                response = self.table.get_item(Key={"year": year, "title": title})
-            except ClientError as err:
-                logger.error(
-                    "Couldn't get movie %s from table %s. Here's why: %s: %s",
-                    title,
-                    self.table.name,
-                    err.response["Error"]["Code"],
-                    err.response["Error"]["Message"],
+    #updatate single assignment score
+    def update_single_assignment(self, company, full_name, assignment_name, score):
+
+        try:
+            response = self.table.update_item(
+                Key={"company": company, "FullName": full_name},
+                UpdateExpression=f"SET {assignment_name} = :score",
+                ExpressionAttributeValues={":score": score},
+                ReturnValues="UPDATED_NEW"
+            )
+            return response["Attributes"]
+        except ClientError as err:
+            logger.error(f"Couldn't update {assignment_name} for {full_name}: {err}")
+            raise
+
+    #add new assignment column to all students
+    def add_assignment_column(self, assignment_name, default_score=0):
+
+        try:
+            # First, scan all items to get all students
+            response = self.table.scan()
+            students = response['Items']
+
+            # Update each student record to add the new assignment column
+            for student in students:
+                self.table.update_item(
+                Key={"company": student["company"], "FullName": student["FullName"]},
+                UpdateExpression=f"SET {assignment_name} = :score",
+                ExpressionAttributeValues={":score": default_score}
                 )
-                raise
-            else:
-                return response["Item"]
-
-        try:
-            self.table.put_item(
-                Item={
-                    "comapny": company,
-                    "FirstName": FirstName,
-                    "LastName" : Lastname,
-                    "info": {"plot": plot, "rating": Decimal(str(rating))},
-                }
-            )
         except ClientError as err:
-            logger.error(
-                "Couldn't add movie %s to table %s. Here's why: %s: %s",
-                title,
-                self.table.name,
-                err.response["Error"]["Code"],
-                err.response["Error"]["Message"],
-            )
+            logger.error(f"Couldn't add assignment column {assignment_name}: {err}")
             raise
 
-    #Add Student Data
-    def add_StudentData(company, firstName, lastName, attendance[]):
-        """
-        Adds a student record
 
+def add_bonus_column(self, bonus_name, default_score=0):
 
-        :param title: The title of the movie.
-        :param year: The release year of the movie.
-        :param plot: The plot summary of the movie.
-        :param rating: The quality rating of the movie.
-        """
-
-    import uuid
-    import logging
-    from botocore.exceptions import ClientError
-
-    logger = logging.getLogger(__name__)
-
-    # # create a simple unique id for the student
-    # student_id = str(uuid.uuid4())
-
-    # Normalize attendance to a list
-    if attendance is None:
-        attendance = []
-    elif not isinstance(attendance, list):
-        attendance = [attendance]
-
-    item = {
-        # "student_id": student_id,
-        "company": company,
-        "firstName": firstName,
-        "lastName": lastName,
-        "attendance": attendance,
-    }
-
-    # Persist to DynamoDB if a table is configured
-    if self.table is not None:
-        try:
-            self.table.put_item(Item=item)
-        except ClientError as err:
-            logger.error(
-                "Couldn't add student %s to table %s: %s",
-                student_id,
-                getattr(self.table, "name", "<unknown>"),
-                err,
+    try:
+        # First, scan all items to get all students
+        response = self.table.scan()
+        students = response['Items']
+        
+        # Update each student record to add the new bonus column
+        for student in students:
+            self.table.update_item(
+                Key={"company": student["company"], "FullName": student["FullName"]},
+                UpdateExpression=f"SET {bonus_name} = :score",
+                ExpressionAttributeValues={":score": default_score}
             )
-            raise
+    except ClientError as err:
+        logger.error(f"Couldn't add bonus column {bonus_name}: {err}")
+        raise
 
-    return item
-
-def
+#create totals columns
+def create_total_column(self, column_names, total_column_name):
+    
+    try:
+        # Get all students
+        response = self.table.scan()
+        students = response['Items']
+        
+        # Update each student with the new total column
+        for student in students:
+            total = 0
+            for column in column_names:
+                if column in student:
+                    total += float(student[column])
+            
+            # Add the total column to this student
+            self.table.update_item(
+                Key={"company": student["company"], "FullName": student["FullName"]},
+                UpdateExpression=f"SET {total_column_name} = :total",
+                ExpressionAttributeValues={":total": total}
+            )
+    except ClientError as err:
+        logger.error(f"Couldn't create total column {total_column_name}: {err}")
+        raise
