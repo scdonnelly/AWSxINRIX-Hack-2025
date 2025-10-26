@@ -50,7 +50,7 @@ def tokenRequirement(f):
 def welcome():
     return "Hello! :3"
     
-@app.route('/createUser', methods=["POST"])
+@app.route('/signup', methods=["POST"])
 def createUser():
     """
     username = request.form.get('user')
@@ -108,26 +108,34 @@ def findUser():
 
     return jsonify("User not found")
 
-
-@app.route('/passwordreset', methods=['POST'])
-def resetPassword():
-
+@app.route('/forgot-password', methods=['POST'])
+def forgotpassword():
     body = request.get_json()
-    if not body:
-        return "User did not provide data", 400
     email = body.get('email')
+
     if not email:
-        return "User did not provide username", 400
+        return "Email required", 400
 
-    bytes = password.encode('utf-8')
-    hash = bcrypt.hashpw(bytes, salt)
+    reset_url = f"http://localhost:3000/reset?token=abc123&email={email}"
+    send_reset_email(email, reset_url)
 
-    for user in users:
-        if user["username"] == username:
-            user["password"] = hash
-            return jsonify("Password reset")
+    return jsonify("Reset email sent"), 200
 
-    return jsonify("User not found")
+def send_reset_email(email, reset_url):
+    ses = boto3.client('ses',aws_access_key_id, aws_secret_access_key, region_name)
+    
+    ses.send_email(
+        Source='scdonnelly@scu.edu',  # Replace with your verified email
+        Destination={'ToAddresses': [email]},
+        Message={
+            'Subject': {'Data': 'Password Reset'},
+            'Body': {
+                'Html': {
+                    'Data': f'<p>Click <a href="{reset_url}">here</a> to reset your password.</p>'
+                }
+            }
+        }
+    )
 # Handling data
 
 # website -> database
