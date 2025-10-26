@@ -8,7 +8,7 @@ const LandingPage = () => {
       
       {/* --- THIS IS THE MISSING PART --- */}
       <header className="landing-header">
-        <h1 className="logo">HighView Connect</h1>
+        <h1 className="logo">HighView Portal</h1>
         <nav className="header-nav">
           <Link to="/login" className="nav-button btn-secondary">Login</Link>
           <Link to="/signup" className="nav-button btn-primary">Sign Up</Link>
@@ -22,7 +22,7 @@ const LandingPage = () => {
           <h2 className="hero-headline">Welcome to the HighView Portal</h2>
           <p className="hero-subtext">
             Track your engagement, see your progress, and connect with 
-            opportunities—all in one place.
+            opportunities all in one place.
           </p>
           <div className="hero-cta-buttons">
             <Link to="/signup" className="cta-button btn-primary">Get Started</Link>

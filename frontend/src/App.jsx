@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LandingPage from './Landing-Page/LandingPage.jsx';
+import SignUpPage from './Sign-up-Page/SignupPage.jsx'; 
 import './App.css';
 
 // Import other pages as you build them
@@ -11,10 +12,11 @@ function App() {
     <Router>
       <Routes>
         {/* --- Public Pages --- */}
-        <Route path="/" element={<LandingPage />} /> {/* <-- ADD THIS ROUTE */}
-        
-        {/* <Route path="/login" element={<LoginPage />} /> */}
-        {/* <Route path="/signup" element={<SignUpPage />} /> */}
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/signup" element={<SignUpPage />} /> {/* <-- 2. ADD THIS ROUTE */}
+
+        {/* --- Protected Pages (for later) --- */}
+        {/* <Route path="/dashboard" element={<TeacherDashboard />} /> */}
       </Routes>
     </Router>
   );
