@@ -1,0 +1,115 @@
+
+.auth-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: var(--bg-light, #f9f9f9);
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.auth-form-wrapper {
+  width: 100%;
+  max-width: 420px;
+  background-color: var(--bg-white, #ffffff);
+  padding: 40px;
+  border-radius: var(--border-radius, 8px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.auth-logo {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--primary-color, #007bff);
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.auth-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-dark, #222);
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+/* --- Form Fields --- */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Space between form fields */
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-light, #555);
+  margin-bottom: 6px;
+}
+
+.input-group input {
+  font-size: 1rem;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box; /* Important for padding */
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: var(--primary-color, #007bff);
+  box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+}
+
+/* --- Error Message --- */
+.auth-error {
+  color: #d93025; /* Red */
+  font-size: 0.9rem;
+  text-align: center;
+  margin: -10px 0 10px 0; /* Tucks it between fields */
+}
+
+/* --- Button --- */
+.auth-button {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--bg-white, #ffffff);
+  background-color: var(--primary-color, #007bff);
+  border: none;
+  padding: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 10px;
+}
+
+.auth-button:hover {
+  background-color: var(--primary-hover, #0056b3);
+}
+
+/* --- Switch between Login/Sign Up --- */
+.auth-switch {
+  font-size: 0.9rem;
+  color: var(--text-light, #555);
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 0;
+}
+
+.auth-switch a {
+  color: var(--primary-color, #007bff);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.auth-switch a:hover {
+  text-decoration: underline;
+}
