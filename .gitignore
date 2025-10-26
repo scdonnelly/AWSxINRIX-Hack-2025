@@ -1,2 +1,14 @@
-venv/ 
+venv 
 .env
+
+# AWS credentials - NEVER commit these!
+.aws/
+credentials
+config
+*.pem
+*.key
+
+# Environment files with secrets
+.env.local
+.env.production
+.env.example
