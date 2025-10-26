@@ -305,23 +305,5 @@ def addStudent():
 
     return jsonify(name + " was added and currently has " + str(points) + " points"), 200
 
-
-
-
-"""
-@app.route('/removeStudent')
-def deleteStudent():
-    body = request.get_json
-    if not body:
-        return "User did not provide data", 400
-    name = body.get('name')
-    if not name:
-        return "User did not provide name", 400
-    
-    # use name to retrive student
-    # probably loop over data and delete - or delete entire row if possible
-
-"""
-
 if __name__ == '__main__':
     app.run(debug=True, port=3000)
