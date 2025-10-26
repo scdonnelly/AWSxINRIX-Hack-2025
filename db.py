@@ -1,5 +1,4 @@
 import logging
-import os
 import boto3
 from botocore.exceptions import ClientError
 logger = logging.getLogger(__name__)
@@ -110,17 +109,17 @@ class StudentData:
         clean_name = assignment_name.replace("(", "").replace(")", "").replace(" ", "_")
 
         try:
-        response = self.table.update_item(
-            Key={"company": company, "FullName": full_name},
-            UpdateExpression="SET #assignment_name = :score",
-            ExpressionAttributeNames={"#assignment_name": clean_name},
-            ExpressionAttributeValues={":score": score},
-            ReturnValues="UPDATED_NEW"
-        )
-        return response["Attributes"]
-    except ClientError as err:
-        logger.error(f"Couldn't update {assignment_name} for {full_name}: {err}")
-        raise
+            response = self.table.update_item(
+                Key={"company": company, "FullName": full_name},
+                UpdateExpression="SET #assignment_name = :score",
+                ExpressionAttributeNames={"#assignment_name": clean_name},
+                ExpressionAttributeValues={":score": score},
+                ReturnValues="UPDATED_NEW"
+            )
+            return response["Attributes"]
+        except ClientError as err:
+            logger.error(f"Couldn't update {assignment_name} for {full_name}: {err}")
+            raise
 
     
  #add new assignment column to all students

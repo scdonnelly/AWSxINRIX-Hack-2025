@@ -272,7 +272,7 @@ def forgotpassword():
     return jsonify("Reset email sent"), 200
 
 def send_reset_email(email, reset_url):
-    ses = boto3.client('ses',aws_access_key_id, aws_secret_access_key, region_name)
+    ses = boto3.client('ses',aws_access_key, aws_secret_key, aws_region)
     
     ses.send_email(
         Source='scdonnelly@scu.edu',  # Replace with your verified email
