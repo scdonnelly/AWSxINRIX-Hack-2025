@@ -114,96 +114,79 @@ class StudentData:
             raise
         else:
             return response["Attributes"]
-#Get Data
-    def get_data(self, title, year):
-            """
-            Gets movie data from the table for a specific movie.
 
-            :param title: The title of the movie.
-            :param year: The release year of the movie.
-            :return: The data about the requested movie.
-            """
-            try:
-                response = self.table.get_item(Key={"year": year, "title": title})
-            except ClientError as err:
-                logger.error(
-                    "Couldn't get movie %s from table %s. Here's why: %s: %s",
-                    title,
-                    self.table.name,
-                    err.response["Error"]["Code"],
-                    err.response["Error"]["Message"],
-                )
-                raise
-            else:
-                return response["Item"]
 
+
+    #Add Student Data
+    def add_StudentData(self, company, firstName, lastName, attendance):
+        """
+        Adds a student record to the table
+        """
         try:
+            fullName = f"{firstName} {lastName}"
             self.table.put_item(
                 Item={
-                    "comapny": company,
-                    "FirstName": FirstName,
-                    "LastName" : Lastname,
-                    "info": {"plot": plot, "rating": Decimal(str(rating))},
+                    "company": company,
+                    "FullName": fullName,
+                    "FirstName": firstName,
+                    "LastName": lastName,
+                    "Attendance": attendance,
+                    "assignments": [],
+                    "bonus_points": []
                 }
             )
         except ClientError as err:
             logger.error(
-                "Couldn't add movie %s to table %s. Here's why: %s: %s",
-                title,
+                "Couldn't add student %s to table %s. Here's why: %s: %s",
+                fullName,
                 self.table.name,
                 err.response["Error"]["Code"],
                 err.response["Error"]["Message"],
             )
             raise
 
-    #Add Student Data
-    def add_StudentData(company, firstName, lastName, attendance[]):
-        """
-        Adds a student record
+#Add Column
+def add_column(assignement_data):
+
+    # Add a new column to the student_data dictionary
+    student_data["assignments"].append(assignements)
+
+    # Update the DynamoDB table with the new column
+    dynamodb = boto3.resource('dynamodb')
+
+    table = dynamodb.Table('your_table_name')
+    
+    table.update_item(
+        Key={'id': student_id},
+        UpdateExpression='SET assignments = list_append(if_not_exists(assignments, :empty_list), :new_assignment)',
+        ExpressionAttributeValues={
+            ':empty_list': [],
+            ':new_assignment': [assignment_data]
+        }
+    )
 
 
-        :param title: The title of the movie.
-        :param year: The release year of the movie.
-        :param plot: The plot summary of the movie.
-        :param rating: The quality rating of the movie.
-        """
+    # Add a new column to the student_data dictionary
+    student_data["assignments"].append(assignements)
 
-    import uuid
-    import logging
-    from botocore.exceptions import ClientError
+#Bonus
+def add_bonus_points(bonus_points):
 
-    logger = logging.getLogger(__name__)
+    # Add a new column to the student_data dictionary
+    student_data["bonus_points"].append(bonus_points)
 
-    # # create a simple unique id for the student
-    # student_id = str(uuid.uuid4())
+    # Update the DynamoDB table with the new column
+    dynamodb = boto3.resource('dynamodb')
 
-    # Normalize attendance to a list
-    if attendance is None:
-        attendance = []
-    elif not isinstance(attendance, list):
-        attendance = [attendance]
+    table = dynamodb.Table('your_table_name')
 
-    item = {
-        # "student_id": student_id,
-        "company": company,
-        "firstName": firstName,
-        "lastName": lastName,
-        "attendance": attendance,
-    }
+    table.update_item(
+        Key={'id': student_id},
+        UpdateExpression='SET assignments = list_append(if_not_exists(assignments, :empty_list), :new_assignment)',
+        ExpressionAttributeValues={
+            ':empty_list': [],
+            ':new_assignment': [bonus_points]
+        }
+    )
 
-    # Persist to DynamoDB if a table is configured
-    if self.table is not None:
-        try:
-            self.table.put_item(Item=item)
-        except ClientError as err:
-            logger.error(
-                "Couldn't add student %s to table %s: %s",
-                student_id,
-                getattr(self.table, "name", "<unknown>"),
-                err,
-            )
-            raise
 
-    return item
-
-def
