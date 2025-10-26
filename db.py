@@ -45,3 +45,6 @@ class StudentData:
         else:
             return self.table
 
+
+
+
