@@ -58,7 +58,7 @@ const SignUpPage = () => {
   return (
     <div className="auth-container">
       <div className="auth-form-wrapper">
-        <h1 className="auth-logo">HighView Connect</h1>
+        <h1 className="auth-logo">HighView Portal</h1>
         <h2 className="auth-title">Create Your Teacher Account</h2>
 
         {/* --- The Sign Up Form --- */}

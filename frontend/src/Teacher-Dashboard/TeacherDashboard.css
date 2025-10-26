@@ -1,0 +1,30 @@
+/* --- Main Dashboard Layout --- */
+.dashboard-container {
+  display: flex; /* This is the magic! It puts children side-by-side. */
+  width: 100%;
+  min-height: 100vh; /* Make it fill the whole screen */
+  font-family: Arial, sans-serif;
+}
+
+/* --- 1. Left Column: Navigation Pane --- */
+.nav-pane {
+  width: 280px; /* Give the nav a fixed width */
+  background-color: #f4f4f4; /* A light grey to see it */
+  padding: 20px;
+  border-right: 1px solid #ddd;
+  box-sizing: border-box;
+}
+
+.nav-title {
+  font-size: 1.5rem;
+  color: var(--text-dark, #222);
+  margin-top: 0;
+}
+
+/* --- 2. Right Column: Main Content Display --- */
+.content-pane {
+  flex: 1; /* This tells it to take up ALL remaining space */
+  padding: 20px;
+  box-sizing: border-box;
+  background-color: var(--bg-white, #ffffff);
+}

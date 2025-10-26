@@ -1,12 +1,9 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LandingPage from './Landing-Page/LandingPage.jsx';
-import SignUpPage from './Sign-up-Page/SignupPage.jsx'; 
 import LoginPage from './LoginPage.jsx';
+import SignUpPage from './Sign-up-Page/SignupPage.jsx';
+import LoginPage from './Login-Page/LoginPage.jsx'; // <-- 1. IMPORT IT
 import './App.css';
-
-// Import other pages as you build them
-// import LoginPage from './components/public/LoginPage';
-// import SignUpPage from './components/public/SignUpPage';
 
 function App() {
   return (
@@ -14,11 +11,11 @@ function App() {
       <Routes>
         {/* --- Public Pages --- */}
         <Route path="/" element={<LandingPage />} />
-        <Route path="/signup" element={<SignUpPage />} /> {/* <-- 2. ADD THIS ROUTE */}
+        <Route path="/signup" element={<SignUpPage />} />
         <Route path="/login" element={<LoginPage />} /> {/* <-- 2. ADD THIS ROUTE */}
-
-        {/* --- Protected Pages (for later) --- */}
-        {/* <Route path="/dashboard" element={<TeacherDashboard />} /> */}
+        
+        {/* --- Protected Pages --- */}
+        <Route path="/dashboard" element={<TeacherDashboard />} />
       </Routes>
     </Router>
   );
