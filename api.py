@@ -7,6 +7,7 @@ import requests
 import bcrypt
 import boto3
 from db import StudentData
+from userinfo import UserData
 from decimal import Decimal
 
 
@@ -20,7 +21,7 @@ salt = bcrypt.gensalt()
 hash = bcrypt.hashpw(bytes, salt)
 
 test_user = {
-    'username': "Test User",
+    'email': "Test User",
     'password': hash
 }
 
@@ -87,16 +88,16 @@ def welcome():
 @app.route('/signup', methods=["POST"])
 def createUser():
     """
-    username = request.form.get('user')
+    email = request.form.get('user')
     password = request.form.get('password')
     """
     body = request.get_json()
     if not body:
         return "User did not provide data", 400
-    username = body.get('user')
+    email = body.get('user')
     password = body.get('password')
-    if not username:
-        return "User did not provide username", 400
+    if not email:
+        return "User did not provide email", 400
     if not password:
         return "User did not provide password", 400
     
@@ -105,28 +106,28 @@ def createUser():
 
     # stored locally for now, must connect to database when possible
     new_user = {
-        'username' : username,
+        'email' : email,
         'password' : hash 
     }
 
     users.append(new_user)
     
-    return jsonify("Welcome " + username), 200
+    return jsonify("Welcome " + email), 200
     
 @app.route('/login', methods=["POST"])
 def findUser():
     """
-    username = request.form.get('user')
+    email = request.form.get('user')
     password = request.form.get('password')
     """
     key = str(request.args.get('key'))
     body = request.get_json()
     if not body:
         return "User did not provide data", 400
-    username = body.get('user')
+    email = body.get('user')
     password = body.get('password')
-    if not username:
-        return "User did not provide username", 400
+    if not email:
+        return "User did not provide email", 400
     if not password:
         return "User did not provide password", 400
     
@@ -134,26 +135,44 @@ def findUser():
     hash = bcrypt.hashpw(bytes, salt)
 
     for user in users:
-        if user["username"] == username:
+        if user["email"] == email:
             if user["password"] == hash:
-                token = jwt.encode({'user': username, 'exp': datetime.datetime.now(datetime.timezone.utc)+datetime.timedelta(hours=24)}, key)
+                token = jwt.encode({'user': email, 'exp': datetime.datetime.now(datetime.timezone.utc)+datetime.timedelta(hours=24)}, key)
                 return jsonify(token)
             return jsonify("Password incorrect")
 
     return jsonify("User not found")
 
+<<<<<<< Updated upstream
 @app.route('/forgot-password', methods=['POST'])
 def forgotpassword():
+=======
+
+@app.route('/reset-password', methods=['POST'])
+def resetPassword():
+
+>>>>>>> Stashed changes
     body = request.get_json()
     email = body.get('email')
 
     if not email:
+<<<<<<< Updated upstream
         return "Email required", 400
+=======
+        return "User did not provide email", 400
+>>>>>>> Stashed changes
 
     reset_url = f"http://localhost:3000/reset?token=abc123&email={email}"
     send_reset_email(email, reset_url)
 
+<<<<<<< Updated upstream
     return jsonify("Reset email sent"), 200
+=======
+    for user in users:
+        if user["email"] == email:
+            user["password"] = hash
+            return jsonify("Password reset")
+>>>>>>> Stashed changes
 
 def send_reset_email(email, reset_url):
     ses = boto3.client('ses',aws_access_key_id, aws_secret_access_key, region_name)
@@ -187,7 +206,7 @@ def send_reset_email(email, reset_url):
 # Remove a student 
 # Delete an entire classroom (end of the year)
 
-@app.route('/createStudent')
+@app.route('/createStudent', methods=['POST'])
 @tokenRequirement
 def addStudent():
     body = request.get_json()
