@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import './TeacherDashboard.css';
-// 1. IMPORT THE NEW ICON
 import { FiUsers, FiClipboard, FiBarChart2, FiCheckSquare, FiPlusCircle } from 'react-icons/fi'; 
 
 const TeacherDashboard = () => {
@@ -16,7 +15,7 @@ const TeacherDashboard = () => {
   const [activeTab, setActiveTab] = useState('home');
   const [companyFilter, setCompanyFilter] = useState('all');
 
-  // --- UPDATED: Mock Data with Company ---
+  // --- Mock Data (DEFINED FIRST!) ---
   const mockStudents = [
     { id: 101, name: 'Sara Lee', attendance: '95%', points: 120, company: 'Adobe' },
     { id: 102, name: 'Espy Chen', attendance: '100%', points: 150, company: 'AWS' },
@@ -29,22 +28,23 @@ const TeacherDashboard = () => {
   
   const companyList = [...new Set(mockStudents.map(s => s.company))].sort();
 
-  // --- 2. NEW: MOCK DATA & STATE FOR ATTENDANCE ---
   const mockEvents = [
     { id: 'event1', name: 'September Field Day 9/3' },
     { id: 'event2', name: 'HighView Orientation 9/17' },
     { id: 'event3', name: 'October PD: Communication 10/22' },
   ];
 
-  const [selectedEvent, setSelectedEvent] = useState(mockEvents[0].id); // Default to first event
-  
-  // Create an initial state for attendance. e.g., { 101: 'present', 102: 'present', ... }
+  // --- Attendance State (Uses mockStudents, so defined AFTER) ---
+  const [selectedEvent, setSelectedEvent] = useState(mockEvents[0].id); // Default event ID
   const [attendanceData, setAttendanceData] = useState(
     mockStudents.reduce((acc, student) => {
-      acc[student.id] = 'present'; // Default everyone to 'present'
+      acc[student.id] = 'present'; // Default everyone to present initially
       return acc;
     }, {})
   );
+  
+  // --- Leaderboard State ---
+  const [leaderboardSortKey, setLeaderboardSortKey] = useState('points'); // Default sort
 
   // --- Handlers ---
   const handleCreateClass = () => setIsModalOpen(true);
@@ -59,7 +59,6 @@ const TeacherDashboard = () => {
     setNewSubject('Main Subject');
   };
 
-  // --- 3. NEW: HANDLERS FOR ATTENDANCE PAGE ---
   const handleAttendanceChange = (studentId, status) => {
     setAttendanceData(prevData => ({
       ...prevData,
@@ -68,21 +67,31 @@ const TeacherDashboard = () => {
   };
 
   const handleAddBonusPoints = (studentId) => {
-    // We'll wire this up to a modal later
     console.log(`Opening bonus points modal for student ${studentId}...`);
   };
 
   const handleSubmitAttendance = () => {
-    // In a real app, you'd send this data to your backend
     console.log('Submitting attendance for event:', selectedEvent);
     console.log(attendanceData);
-    alert('Attendance submitted successfully!'); // Simple confirmation
+    alert('Attendance submitted successfully!'); 
   };
+
+  // --- Leaderboard Sorting Logic ---
+  const sortedStudents = mockStudents.slice().sort((a, b) => {
+    if (leaderboardSortKey === 'points') {
+      return b.points - a.points; // Descending points
+    }
+    if (leaderboardSortKey === 'attendance') {
+      // parseFloat removes the '%' sign
+      return parseFloat(b.attendance) - parseFloat(a.attendance); // Descending attendance
+    }
+    return 0;
+  });
 
   return (
     <div className="dashboard-container">
       
-      {/* --- Left Column: Navigation Pane (No changes) --- */}
+      {/* --- Left Column: Navigation Pane --- */}
       <div className="nav-pane">
         <h1 className="nav-logo">HighView</h1>
         <button className="create-class-btn" onClick={handleCreateClass}>
@@ -102,7 +111,7 @@ const TeacherDashboard = () => {
         </div>
       </div>
 
-      {/* --- Right Column: Main Content Display (No changes) --- */}
+      {/* --- Right Column: Main Content Display --- */}
       <div className="content-pane">
         
         <header className="content-header">
@@ -121,7 +130,7 @@ const TeacherDashboard = () => {
         
         <main className="content-main">
           
-          {/* --- Home Hub (No changes) --- */}
+          {/* --- Home Hub --- */}
           {activeTab === 'home' && (
             <div className="dashboard-hub">
               <button 
@@ -155,7 +164,7 @@ const TeacherDashboard = () => {
             </div>
           )}
 
-          {/* --- Students Tab (No changes) --- */}
+          {/* --- Students Tab --- */}
           {activeTab === 'students' && (
             <div className="students-tab">
               <button className="back-button" onClick={() => setActiveTab('home')}>
@@ -214,7 +223,7 @@ const TeacherDashboard = () => {
             </div>
           )}
 
-          {/* --- 4. UPDATED: Attendance Tab --- */}
+          {/* --- Attendance Tab --- */}
           {activeTab === 'attendance' && (
             <div className="attendance-tab">
               <button className="back-button" onClick={() => setActiveTab('home')}>
@@ -250,16 +259,12 @@ const TeacherDashboard = () => {
                 <tbody>
                   {mockStudents.map((student) => (
                     <tr key={student.id}>
-                      {/* --- Student Name --- */}
                       <td>{student.name}</td>
-                      
-                      {/* --- Attendance Dropdown --- */}
                       <td>
                         <select
                           className="attendance-dropdown"
                           value={attendanceData[student.id]}
                           onChange={(e) => handleAttendanceChange(student.id, e.target.value)}
-                          // This applies the color class based on the value
                           data-status={attendanceData[student.id]}
                         >
                           <option value="present">Present</option>
@@ -267,8 +272,6 @@ const TeacherDashboard = () => {
                           <option value="unexcused">Unexcused Absence</option>
                         </select>
                       </td>
-                      
-                      {/* --- Bonus Points Button --- */}
                       <td>
                         <button 
                           className="action-button bonus"
@@ -285,20 +288,65 @@ const TeacherDashboard = () => {
               <button className="submit-attendance-btn" onClick={handleSubmitAttendance}>
                 Submit Attendance
               </button>
-
             </div>
           )}
 
-          {/* --- Other Tab Placeholders (No changes) --- */}
+          {/* --- Leaderboard Tab --- */}
           {activeTab === 'leaderboard' && (
-            <div>
+            <div className="leaderboard-tab">
               <button className="back-button" onClick={() => setActiveTab('home')}>
                 &larr; Back to Dashboard Home
               </button>
-              <h2>Leaderboard Content</h2>
-              <p>This is where the leaderboard will go.</p>
+              
+              <div className="leaderboard-header">
+                <h2>Student Leaderboard</h2>
+                <div className="filter-group">
+                  <label htmlFor="leaderboardSort">Rank by:</label>
+                  <select 
+                    id="leaderboardSort" 
+                    value={leaderboardSortKey} 
+                    onChange={(e) => setLeaderboardSortKey(e.target.value)}
+                  >
+                    <option value="points">Bonus Points</option>
+                    <option value="attendance">Attendance %</option>
+                  </select>
+                </div>
+              </div>
+
+              <table className="students-table leaderboard-table">
+                <thead>
+                  <tr>
+                    <th>Rank</th>
+                    <th>Name</th>
+                    <th>Company</th>
+                    <th className={leaderboardSortKey === 'attendance' ? 'sorted-by' : ''}>
+                      Attendance %
+                    </th>
+                    <th className={leaderboardSortKey === 'points' ? 'sorted-by' : ''}>
+                      Bonus Points
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sortedStudents.map((student, index) => (
+                    <tr key={student.id}>
+                      <td className="rank-cell">{index + 1}</td>
+                      <td>{student.name}</td>
+                      <td>{student.company}</td>
+                      <td className={leaderboardSortKey === 'attendance' ? 'sorted-by' : ''}>
+                        {student.attendance}
+                      </td>
+                      <td className={leaderboardSortKey === 'points' ? 'sorted-by' : ''}>
+                        {student.points}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
+
+          {/* --- Events Tab --- */}
           {activeTab === 'events' && (
             <div>
               <button className="back-button" onClick={() => setActiveTab('home')}>
@@ -312,7 +360,7 @@ const TeacherDashboard = () => {
         </main>
       </div>
 
-      {/* --- Create Class Modal (No changes) --- */}
+      {/* --- Create Class Modal --- */}
       {isModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -364,7 +412,6 @@ const TeacherDashboard = () => {
         </div>
       )}
       
-      {/* --- REMOVED: Health Note Modal --- */}
     </div>
   );
 };
