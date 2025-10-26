@@ -1,3 +1,143 @@
-.header-text {
-    font-size: 100px;
+/* --- Global Variables (Optional, but good for hackathons) --- */
+:root {
+  --primary-color: #007bff;
+  --primary-hover: #0056b3;
+  --text-dark: #222;
+  --text-light: #555;
+  --bg-light: #f9f9f9;
+  --bg-white: #ffffff;
+  --border-radius: 8px;
+}
+
+/* --- General Page Layout --- */
+.landing-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--bg-light);
+  font-family: Arial, sans-serif;
+}
+
+/* --- 1. Header Navigation --- */
+.landing-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  background-color: var(--bg-white);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  box-sizing: border-box; /* Ensures padding doesn't affect width */
+}
+
+.logo {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin: 0;
+}
+
+.header-nav {
+  display: flex;
+  gap: 15px; /* Space between buttons */
+}
+
+/* --- 2. Hero Section (Main Content) --- */
+.hero-section {
+  flex-grow: 1; /* Makes the main section fill available space */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 60px;
+  padding: 60px 40px;
+  max-width: 1200px;
+  margin: 0 auto; /* Centers the hero content */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.hero-content {
+  flex: 1; /* Takes up half the space */
+  max-width: 500px;
+}
+
+.hero-headline {
+  font-size: 3.2rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  line-height: 1.2;
+  margin-bottom: 20px;
+}
+
+.hero-subtext {
+  font-size: 1.2rem;
+  color: var(--text-light);
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+.hero-cta-buttons {
+  display: flex;
+  gap: 15px;
+}
+
+/* --- 3. Image Placeholder --- */
+.hero-image-placeholder {
+  flex: 1; /* Takes up the other half */
+  max-width: 500px;
+  height: 400px;
+  background-color: #e9ecef; /* Placeholder color */
+  border-radius: var(--border-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #aaa;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+/* --- 4. Reusable Button Styles --- */
+.nav-button, .cta-button {
+  display: inline-block;
+  text-decoration: none;
+  font-weight: 600;
+  border-radius: var(--border-radius);
+  transition: all 0.3s;
+  text-align: center;
+  border: 2px solid transparent;
+}
+
+/* Button size variants */
+.nav-button {
+  padding: 10px 18px;
+  font-size: 0.95rem;
+}
+
+.cta-button {
+  padding: 14px 28px;
+  font-size: 1.1rem;
+}
+
+/* Button color variants */
+.btn-primary {
+  background-color: var(--primary-color);
+  color: var(--bg-white);
+  border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+  border-color: var(--primary-hover);
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background-color: var(--bg-white);
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-secondary:hover {
+  background-color: #f0f8ff; /* Light blue on hover */
+  transform: translateY(-2px);
 }

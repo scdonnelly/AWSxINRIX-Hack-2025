@@ -1,14 +1,22 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LandingPage from './LandingPage.jsx';
 import './App.css';
 
+// Import other pages as you build them
+// import LoginPage from './components/public/LoginPage';
+// import SignUpPage from './components/public/SignUpPage';
+
 function App() {
   return (
-    <BrowserRouter>
+    <Router>
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        {/* --- Public Pages --- */}
+        <Route path="/" element={<LandingPage />} /> {/* <-- ADD THIS ROUTE */}
+        
+        {/* <Route path="/login" element={<LoginPage />} /> */}
+        {/* <Route path="/signup" element={<SignUpPage />} /> */}
       </Routes>
-    </BrowserRouter>
+    </Router>
   );
 }
 
