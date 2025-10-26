@@ -108,6 +108,26 @@ def findUser():
 
     return jsonify("User not found")
 
+
+@app.route('/passwordreset', methods=['POST'])
+def resetPassword():
+
+    body = request.get_json()
+    if not body:
+        return "User did not provide data", 400
+    email = body.get('email')
+    if not email:
+        return "User did not provide username", 400
+
+    bytes = password.encode('utf-8')
+    hash = bcrypt.hashpw(bytes, salt)
+
+    for user in users:
+        if user["username"] == username:
+            user["password"] = hash
+            return jsonify("Password reset")
+
+    return jsonify("User not found")
 # Handling data
 
 # website -> database

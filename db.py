@@ -170,7 +170,7 @@ class StudentData:
 
 
         # Add a new column to the student_data dictionary
-        student_data["assignments"].append(assignment_data)
+        self.student_data["assignments"].append(assignment_data)
 
         # Update the DynamoDB table with the new column
         try:
@@ -236,24 +236,23 @@ class StudentData:
 
 
     #Bonus
-    def add_bonus_points(self, bonus_points):
+    def add_bonus_points(self, company, full_name, bonus_points):
 
         # Add a new column to the student_data dictionary
-        student_data["BonusPoints"].append(bonus_points)
+        self.student_data["BonusPoints"].append(bonus_points)
 
-        # Update the DynamoDB table with the new column
-        dynamodb = boto3.resource('dynamodb')
-
-        table = dynamodb.Table('your_table_name')
-
-        table.update_item(
-            Key={'id': student_id},
-            UpdateExpression='SET assignments = list_append(if_not_exists(assignments, :empty_list), :new_assignment)',
-            ExpressionAttributeValues={
-                ':empty_list': [],
-                ':new_assignment': [bonus_points]
-            }
-        )
+        try:
+            self.table.update_item(
+                Key={"company": company, "FullName": full_name},
+                UpdateExpression='SET BonusPoints = list_append(if_not_exists(BonusPoints, :empty_list), :new_bonus)',
+                ExpressionAttributeValues={
+                    ':empty_list': [],
+                    ':new_bonus': [bonus_points]
+                }
+            )
+        except ClientError as err:
+            logger.error(f"Couldn't add bonus points: {err}")
+            raise
 
     def delete_student(self, company, full_name):
         try:
