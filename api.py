@@ -5,6 +5,9 @@ import jwt
 import datetime
 import requests
 import bcrypt
+import boto3
+from db import StudentData
+from decimal import Decimal
 
 
 #storing users in a list for now, will update to store in a database
@@ -26,8 +29,18 @@ users.append(test_user)
 app = Flask(__name__)
 CORS(app)
 
-# I need this, but where do i store it if i can't share it?
-app.config["SECRET_KEY"] = 'thisIsTheSecretKey' # change later lol
+# Initialize database connection
+def get_db():
+    dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+    student_db = StudentData(dynamodb)
+    student_db.table = dynamodb.Table('hackathon-test-table')
+    return student_db
+
+# Helper function to convert Decimal to float for JSON
+def decimal_to_float(obj):
+    if isinstance(obj, Decimal):
+        return float(obj)
+    return obj
 
 def tokenRequirement(f):
     @wraps(f)
@@ -45,6 +58,27 @@ def tokenRequirement(f):
         return f(*args, **kwargs)
     return decorated
 
+
+@app.route('/students', methods=['POST'])
+@tokenRequirement
+def add_student():
+    """Add a new student"""
+    try:
+        body = request.get_json()
+        if not body:
+            return "User did not provide data", 400
+        db = get_db()
+        
+        db.add_StudentData(
+            company=data['company'],
+            firstName=data['firstName'],
+            lastName=data['lastName'],
+            attendance=data['attendance']
+        )
+        
+        return jsonify({"message": "Student added successfully"}), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 @app.route('/')
 def welcome():
