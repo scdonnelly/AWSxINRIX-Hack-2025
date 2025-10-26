@@ -118,7 +118,8 @@ class StudentData:
             logger.error(f"Couldn't update {assignment_name} for {full_name}: {err}")
             raise
 
-    #add new assignment column to all students
+    
+ #add new assignment column to all students
     def add_assignment_column(self, assignment_name, default_score=0):
 
         try:
@@ -130,7 +131,8 @@ class StudentData:
             for student in students:
                 self.table.update_item(
                 Key={"company": student["company"], "FullName": student["FullName"]},
-                UpdateExpression=f"SET {assignment_name} = :score",
+                UpdateExpression="SET #assignment_name = :score",
+                ExpressionAttributeNames={"#assignment_name": assignment_name},
                 ExpressionAttributeValues={":score": default_score}
                 )
         except ClientError as err:
