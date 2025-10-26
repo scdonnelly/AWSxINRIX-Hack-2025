@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Management System</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        input, button { padding: 10px; margin: 5px; }
+        input { width: 200px; }
+        button { background: #007bff; color: white; border: none; cursor: pointer; }
+        .section { margin: 30px 0; padding: 20px; border: 1px solid #ddd; }
+        #results { margin-top: 20px; padding: 10px; background: #f8f9fa; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Student Management System</h1>
+        
+        <div class="section">
+            <h3>Add Student</h3>
+            <input type="text" id="company" placeholder="Company" />
+            <input type="text" id="firstName" placeholder="First Name" />
+            <input type="text" id="lastName" placeholder="Last Name" />
+            <input type="number" id="attendance" placeholder="Attendance" />
+            <button onclick="addStudent()">Add Student</button>
+        </div>
+        
+        <div class="section">
+            <h3>Get Students</h3>
+            <input type="text" id="getCompany" placeholder="Company" />
+            <button onclick="getStudents()">Get Students</button>
+        </div>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        function showResult(data) {
+            document.getElementById('results').innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+        }
+        
+        function addStudent() {
+            fetch('/students', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    company: document.getElementById('company').value,
+                    firstName: document.getElementById('firstName').value,
+                    lastName: document.getElementById('lastName').value,
+                    attendance: parseInt(document.getElementById('attendance').value)
+                })
+            })
+            .then(r => r.json())
+            .then(showResult)
+            .catch(e => showResult({error: e.message}));
+        }
+        
+        function getStudents() {
+            fetch('/students', {
+                method: 'GET',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    company: document.getElementById('getCompany').value
+                })
+            })
+            .then(r => r.json())
+            .then(showResult)
+            .catch(e => showResult({error: e.message}));
+        }
+    </script>
+</body>
+</html>

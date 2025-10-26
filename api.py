@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from functools import wraps
 import jwt
@@ -11,19 +11,9 @@ from userinfo import UserData
 from decimal import Decimal
 import os
 from dotenv import load_dotenv
+from flask import render_template_string
+from flask import render_template
 
-
-load_dotenv()
-
-aws_access_key = os.getenv('AWS_ACCESS_KEY_ID')
-aws_secret_key = os.getenv('AWS_SECRET_ACCESS_KEY')
-aws_region = os.getenv('AWS_DEFAULT_REGION')
-
-dynamodb = boto3.resource('dynamodb',
-    aws_access_key_id=aws_access_key,
-    aws_secret_access_key=aws_secret_key,
-    region_name=aws_region
-)
 
 #storing users in a list for now, will update to store in a database
 users = []
@@ -35,7 +25,7 @@ salt = bcrypt.gensalt()
 hash = bcrypt.hashpw(bytes, salt)
 
 test_user = {
-    'email': "Test User",
+    'username': "Test User",
     'password': hash
 }
 
@@ -73,9 +63,9 @@ def tokenRequirement(f):
         return f(*args, **kwargs)
     return decorated
 
+
 @app.route('/students', methods=['POST'])
 @tokenRequirement
-
 def add_student():
     """Add a new student"""
     try:
@@ -84,7 +74,6 @@ def add_student():
             return "User did not provide data", 400
         db = get_db()
         
-            
         db.add_StudentData(
             company=body['company'],
             firstName=body['firstName'],
@@ -92,11 +81,130 @@ def add_student():
             attendance=body['attendance']
         )
         
-            
         return jsonify({"message": "Student added successfully"}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+
+@app.route('/')
+def welcome():
+    return "Hello! :3"
     
+@app.route('/createUser', methods=["POST"])
+def createUser():
+    """
+    username = request.form.get('user')
+    password = request.form.get('password')
+    """
+    body = request.get_json()
+    if not body:
+        return "User did not provide data", 400
+    username = body.get('user')
+    password = body.get('password')
+    if not username:
+        return "User did not provide username", 400
+    if not password:
+        return "User did not provide password", 400
+    
+    encode = password.encode('utf-8')
+    hash = bcrypt.hashpw(encode, salt)
+
+    # stored locally for now, must connect to database when possible
+    new_user = {
+        'username' : username,
+        'password' : hash 
+    }
+
+    users.append(new_user)
+    
+    return jsonify("Welcome " + username), 200
+    
+@app.route('/login', methods=["POST"])
+def findUser():
+    """
+    username = request.form.get('user')
+    password = request.form.get('password')
+    """
+    key = str(request.args.get('key'))
+    body = request.get_json()
+    if not body:
+        return "User did not provide data", 400
+    username = body.get('user')
+    password = body.get('password')
+    if not username:
+        return "User did not provide username", 400
+    if not password:
+        return "User did not provide password", 400
+    
+    bytes = password.encode('utf-8')
+    hash = bcrypt.hashpw(bytes, salt)
+
+    for user in users:
+        if user["username"] == username:
+            if user["password"] == hash:
+                token = jwt.encode({'user': username, 'exp': datetime.datetime.now(datetime.timezone.utc)+datetime.timedelta(hours=24)}, key)
+                return jsonify(token)
+            return jsonify("Password incorrect")
+
+    return jsonify("User not found")
+
+
+@app.route('/passwordreset', methods=['POST'])
+def resetPassword():
+
+    body = request.get_json()
+    if not body:
+        return "User did not provide data", 400
+    email = body.get('email')
+    if not email:
+        return "User did not provide username", 400
+
+    bytes = password.encode('utf-8')
+    hash = bcrypt.hashpw(bytes, salt)
+
+    for user in users:
+        if user["username"] == email:
+            user["password"] = hash
+            return jsonify("Password reset")
+
+    return jsonify("User not found")
+
+
+load_dotenv()
+
+aws_access_key = os.getenv('AWS_ACCESS_KEY_ID')
+aws_secret_key = os.getenv('AWS_SECRET_ACCESS_KEY')
+aws_region = os.getenv('AWS_DEFAULT_REGION')
+
+dynamodb = boto3.resource('dynamodb',
+    aws_access_key_id=aws_access_key,
+    aws_secret_access_key=aws_secret_key,
+    region_name=aws_region
+)
+
+#storing users in a list for now, will update to store in a database
+users = []
+
+password = "password"
+
+bytes = password.encode('utf-8')
+salt = bcrypt.gensalt()
+hash = bcrypt.hashpw(bytes, salt)
+
+test_user = {
+    'email': "Test User",
+    'password': hash
+}
+
+users.append(test_user)
+
+app = Flask(__name__, template_folder="frontend")
+CORS(app)
+
+
+
+@app.route('/')
+def home():
+    return send_from_directory('frontend/dist', 'index.html')
 
     
 @app.route('/students', methods=['GET'])
@@ -253,13 +361,13 @@ def resetPassword():
 
 
         return jsonify("User not found")
-
+"""
 @app.route('/signup', methods=["POST"])
 def createUser():
-    """
+    ""
     email = request.form.get('user')
     password = request.form.get('password')
-    """
+    ""
     body = request.get_json()
     if not body:
         return "User did not provide data", 400
@@ -285,10 +393,10 @@ def createUser():
     
 @app.route('/login', methods=["POST"])
 def findUser():
-    """
+    ""
     email = request.form.get('user')
     password = request.form.get('password')
-    """
+    ""
     key = str(request.args.get('key'))
     body = request.get_json()
     if not body:
@@ -311,7 +419,7 @@ def findUser():
             return jsonify("Password incorrect")
 
     return jsonify("User not found")
-
+"""
 
 if __name__ == '__main__':
     app.run(debug=True, port=3000)
