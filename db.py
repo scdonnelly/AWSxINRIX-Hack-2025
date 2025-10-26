@@ -85,6 +85,7 @@ class StudentData:
         else:
             return response["Items"]
         
+#Update data
     def update_movie(self, title, year, rating, plot):
         """
         Updates rating and plot data for a movie in the table.
@@ -113,7 +114,7 @@ class StudentData:
             raise
         else:
             return response["Attributes"]
-        
+#Get Data
     def get_data(self, title, year):
             """
             Gets movie data from the table for a specific movie.
@@ -156,12 +157,53 @@ class StudentData:
             raise
 
     #Add Student Data
-    def add_StudentData(company, firstName, lastName):
+    def add_StudentData(company, firstName, lastName, attendance[]):
         """
         Adds a student record
+
 
         :param title: The title of the movie.
         :param year: The release year of the movie.
         :param plot: The plot summary of the movie.
         :param rating: The quality rating of the movie.
         """
+
+    import uuid
+    import logging
+    from botocore.exceptions import ClientError
+
+    logger = logging.getLogger(__name__)
+
+    # # create a simple unique id for the student
+    # student_id = str(uuid.uuid4())
+
+    # Normalize attendance to a list
+    if attendance is None:
+        attendance = []
+    elif not isinstance(attendance, list):
+        attendance = [attendance]
+
+    item = {
+        # "student_id": student_id,
+        "company": company,
+        "firstName": firstName,
+        "lastName": lastName,
+        "attendance": attendance,
+    }
+
+    # Persist to DynamoDB if a table is configured
+    if self.table is not None:
+        try:
+            self.table.put_item(Item=item)
+        except ClientError as err:
+            logger.error(
+                "Couldn't add student %s to table %s: %s",
+                student_id,
+                getattr(self.table, "name", "<unknown>"),
+                err,
+            )
+            raise
+
+    return item
+
+def
