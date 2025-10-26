@@ -18,11 +18,11 @@
   background-color: var(--bg-light);
 }
 
-/* --- 1. Left Column: Navigation Pane --- */
+/* --- Left Column: Navigation Pane --- */
 .nav-pane {
   width: 280px;
-  background-color: #1a202c; 
-  color: #e2e8f0; 
+  background-color: #1a202c;
+  color: #e2e8f0;
   padding: 25px 20px;
   box-sizing: border-box;
   display: flex;
@@ -43,7 +43,7 @@
   padding: 12px;
   font-size: 1rem;
   font-weight: 600;
-  background-color: var(--primary-color); 
+  background-color: var(--primary-color);
   color: var(--bg-white);
   border: none;
   border-radius: var(--border-radius);
@@ -60,7 +60,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #a0aec0; 
+  color: #a0aec0;
   margin-top: 30px;
   margin-bottom: 10px;
   padding-left: 10px;
@@ -69,7 +69,7 @@
 .class-list {
   display: flex;
   flex-direction: column;
-  gap: 5px; 
+  gap: 5px;
 }
 
 .class-list-item {
@@ -78,7 +78,7 @@
   text-align: left;
   font-size: 1rem;
   font-weight: 500;
-  color: #e2e8f0; 
+  color: #e2e8f0;
   background-color: transparent;
   border: none;
   border-radius: 6px;
@@ -87,7 +87,7 @@
 }
 
 .class-list-item:hover {
-  background-color: #2d3748; 
+  background-color: #2d3748;
 }
 
 .class-list-item.active {
@@ -96,10 +96,17 @@
   font-weight: 600;
 }
 
+.no-classes-message {
+    text-align: center;
+    font-style: italic;
+    color: #a0aec0;
+    margin-top: 20px;
+}
 
-/* --- 2. Right Column: Main Content Display --- */
+
+/* --- Right Column: Main Content Display --- */
 .content-pane {
-  flex: 1; 
+  flex: 1;
   box-sizing: border-box;
 }
 
@@ -110,7 +117,7 @@
   align-items: center;
   padding: 20px 30px;
   background-color: var(--bg-white);
-  border-bottom: 1px solid #e2e8f0; 
+  border-bottom: 1px solid #e2e8f0;
   box-shadow: 0 1px 3px rgba(0,0,0,0.02);
 }
 
@@ -129,7 +136,7 @@
 .join-code {
   font-size: 0.9rem;
   font-weight: 600;
-  background-color: #f0f8ff; 
+  background-color: #f0f8ff;
   color: var(--primary-color);
   padding: 5px 10px;
   border-radius: 6px;
@@ -148,7 +155,7 @@
 }
 
 .search-bar input {
-  padding: 10px 15px 10px 40px; 
+  padding: 10px 15px 10px 40px;
   font-size: 0.95rem;
   border: 1px solid #ddd;
   border-radius: 6px;
@@ -173,31 +180,48 @@
 /* --- Main Content Area --- */
 .content-main {
   padding: 30px;
-  background-color: var(--bg-light); 
-  flex-grow: 1; 
+  background-color: var(--bg-light);
+  flex-grow: 1;
+}
+
+/* Message shown when no class is selected */
+.no-class-selected {
+    text-align: center;
+    padding: 50px 20px;
+    background-color: var(--bg-white);
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-top: 20px;
+}
+.no-class-selected h2 {
+    color: var(--text-dark);
+    margin-bottom: 10px;
+}
+.no-class-selected p {
+    color: var(--text-light);
 }
 
 /* --- Dashboard Hub Styles (Big Buttons) --- */
 .dashboard-hub {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); 
-  gap: 25px; 
+  grid-template-columns: repeat(2, 1fr);
+  gap: 25px;
   max-width: 800px;
   margin-top: 20px;
 }
 
 .hub-button {
   display: flex;
-  flex-direction: column; 
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 15px; 
+  gap: 15px;
   padding: 40px;
   font-size: 1.25rem;
   font-weight: 600;
   color: var(--text-dark);
   background-color: var(--bg-white);
-  border: 1px solid #e2e8f0; 
+  border: 1px solid #e2e8f0;
   border-radius: var(--border-radius);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03);
   cursor: pointer;
@@ -282,18 +306,18 @@
 /* --- Students Tab Table Styles --- */
 .students-table {
   width: 100%;
-  border-collapse: collapse; 
+  border-collapse: collapse;
   background-color: var(--bg-white);
   border-radius: var(--border-radius);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  overflow: hidden; 
+  overflow: hidden;
 }
 
 .students-table th,
 .students-table td {
   padding: 15px;
   text-align: left;
-  border-bottom: 1px solid #e2e8f0; 
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .students-table th {
@@ -329,8 +353,8 @@
 }
 
 .action-button.remove {
-  background-color: #fff1f1; 
-  color: #d93025; 
+  background-color: #fff1f1;
+  color: #d93025;
 }
 
 .action-button.remove:hover {
@@ -341,16 +365,16 @@
 
 /* --- Modal Styles --- */
 .modal-overlay {
-  position: fixed; 
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); 
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000; 
+  z-index: 1000;
 }
 
 .modal-content {
@@ -370,7 +394,7 @@
 .modal-form {
   display: flex;
   flex-direction: column;
-  gap: 20px; 
+  gap: 20px;
 }
 .modal-form-group {
   display: flex;
@@ -388,11 +412,11 @@
   padding: 12px;
   border: 1px solid #ccc;
   border-radius: 6px;
-  box-sizing: border-box; 
+  box-sizing: border-box;
 }
 .modal-buttons {
   display: flex;
-  justify-content: flex-end; 
+  justify-content: flex-end;
   gap: 10px;
   margin-top: 20px;
 }
@@ -413,11 +437,11 @@
   background-color: var(--primary-hover);
 }
 .modal-button.secondary {
-  background-color: #f0f0f0; 
+  background-color: #f0f0f0;
   color: var(--text-dark);
 }
 .modal-button.secondary:hover {
-  background-color: #e0e0e0; 
+  background-color: #e0e0e0;
 }
 
 
@@ -474,8 +498,8 @@
   border-color: #fc8181;
 }
 .action-button.bonus {
-  background-color: #f0f5ff; 
-  color: #4285f4; 
+  background-color: #f0f5ff;
+  color: #4285f4;
   font-weight: 600;
 }
 .action-button.bonus:hover {
@@ -485,15 +509,15 @@
   padding: 12px 25px;
   font-size: 1.1rem;
   font-weight: 600;
-  background-color: var(--primary-color); 
+  background-color: var(--primary-color);
   color: var(--bg-white);
   border: none;
   border-radius: var(--border-radius);
   cursor: pointer;
   transition: background-color 0.3s;
-  display: block; 
+  display: block;
   margin-top: 25px;
-  margin-left: auto; 
+  margin-left: auto;
 }
 .submit-attendance-btn:hover {
   background-color: var(--primary-hover);
@@ -513,7 +537,6 @@
   margin: 0;
 }
 
-/* Center rank and highlight sorted column */
 .leaderboard-table .rank-cell {
   font-size: 1.1rem;
   font-weight: 700;
@@ -525,4 +548,86 @@
 .leaderboard-table .sorted-by {
   font-weight: 700;
   background-color: #f8f8f8; /* Light background for sorted column */
+}
+
+/* --- Events Tab Styles --- */
+.events-tab h2 {
+  font-size: 1.5rem;
+  color: var(--text-dark);
+  margin-top: 0; /* Align with other tab titles */
+  margin-bottom: 20px;
+}
+
+.add-event-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+    background-color: var(--bg-white);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.add-event-input {
+    flex-grow: 1; /* Input takes up most space */
+    font-size: 1rem;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+.add-event-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+}
+
+.add-event-button {
+    /* Use primary button style */
+    padding: 12px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    background-color: var(--primary-color);
+    color: var(--bg-white);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+.add-event-button:hover {
+    background-color: var(--primary-hover);
+}
+
+/* --- RE-ADDED: Current Events List Styles --- */
+.current-events-list {
+    background-color: var(--bg-white);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.current-events-list h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: var(--text-dark);
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.current-events-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.current-events-list li {
+    padding: 8px 0;
+    color: var(--text-light);
+    border-bottom: 1px dashed #eee;
+}
+.current-events-list li:last-child {
+    border-bottom: none;
+}
+.current-events-list p { /* Style for the "No events" message */
+    font-style: italic;
+    color: var(--text-light);
 }
