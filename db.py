@@ -1,3 +1,7 @@
+import logging
+from botocore.exceptions import ClientError
+logger = logging.getLogger(__name__)
+
 class StudentData:
     
     #dictionary
@@ -5,9 +9,10 @@ class StudentData:
         "company": 'company',
         "FirstName": 'FirstName',
         "LastName": 'LastName',
+        "FullName": 'FullName',
         "assignments": [],
         "bonus_points": [],
-        "Attendence": []
+        "Attendance": []
     }
     
     #intialize the connection
@@ -20,16 +25,14 @@ class StudentData:
 
         try:
             self.table = self.dyn_resource.create_table(
-                TableName=StudentData,
+                TableName=table_name,
                 KeySchema=[
                     {"AttributeName": "company", "KeyType": "HASH"},  # Partition key
-                    {"AttributeName": "FirstName", "KeyType": "RANGE"},  # Sort key
-                    {"AttributeName": "LastName", "KeyType": "RANGE"},  # Sort key
+                    {"AttributeName": "FullName", "KeyType": "RANGE"},  # Sort key
                 ],
                 AttributeDefinitions=[
-                    {"AttributeName": "company", "AttributeType": "N"},
-                    {"AttributeName": "FirstName", "AttributeType": "S"},
-                    {"AttributeName": "LastName", "AttributeType": "S"},
+                    {"AttributeName": "company", "AttributeType": "S"},
+                    {"AttributeName": "FullName", "AttributeType": "S"},
                 ],
                 BillingMode='PAY_PER_REQUEST',
             )
@@ -45,20 +48,14 @@ class StudentData:
         else:
             return self.table
 
-
-    def get_data(self, title, year):
-            """
-            Gets movie data from the table for a specific movie.
-
-            :param title: The title of the movie.
-            :param year: The release year of the movie.
-            :return: The data about the requested movie.
-            """
+    #get student data from a table
+    def get_data(self, company, FullName):
+            
             try:
-                response = self.table.get_item(Key={"year": year, "title": title})
+                response = self.table.get_item(Key={"company": company, "FullName": FullName})
             except ClientError as err:
                 logger.error(
-                    "Couldn't get movie %s from table %s. Here's why: %s: %s",
+                    "Couldn't get data %s from table %s. Here's why: %s: %s",
                     title,
                     self.table.name,
                     err.response["Error"]["Code"],
