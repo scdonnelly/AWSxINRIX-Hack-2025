@@ -12,6 +12,7 @@ from decimal import Decimal
 import os
 from dotenv import load_dotenv
 
+
 load_dotenv()
 
 aws_access_key = os.getenv('AWS_ACCESS_KEY_ID')
@@ -72,8 +73,8 @@ def tokenRequirement(f):
         return f(*args, **kwargs)
     return decorated
 
-
 @app.route('/students', methods=['POST'])
+@tokenRequirement
 
 def add_student():
     """Add a new student"""
@@ -82,6 +83,7 @@ def add_student():
         if not body:
             return "User did not provide data", 400
         db = get_db()
+        
             
         db.add_StudentData(
             company=body['company'],
@@ -89,6 +91,7 @@ def add_student():
             lastName=body['lastName'],
             attendance=body['attendance']
         )
+        
             
         return jsonify({"message": "Student added successfully"}), 201
     except Exception as e:
@@ -167,39 +170,90 @@ def add_assignment():
     
 @app.route('/assignments/score', methods=['PUT'])
 def update_assignment_score():
-    """Update individual assignment score"""
-    try:
+        """Update individual assignment score"""
+        try:
+            body = request.get_json()
+            if not body:
+                return "User did not provide data", 400
+            db = get_db()
+            
+            company = body['company']
+            full_name = body['full_name']
+            assignment_name = body['assignment_name']
+            score=Decimal(str(body['score']))
+            if not company:
+                return "User did not satisfy all requirements"
+
+
+            db.update_single_assignment(
+                company,
+                full_name,
+                assignment_name,
+                score
+            )
+            
+            return jsonify({"message": "Assignment score updated"}), 200
+        except Exception as e:
+            return jsonify({"error": str(e)}), 400
+    
+
+@app.route('/forgot-password', methods=['POST'])
+def forgotpassword():
+        body = request.get_json()
+        email = body.get('email')
+
+        if not email:
+            return "Email required", 400
+
+        reset_url = f"http://localhost:3000/reset?token=abc123&email={email}"
+        send_reset_email(email, reset_url)
+
+        return jsonify("Reset email sent"), 200
+
+def send_reset_email(email, reset_url):
+        ses = boto3.client('ses',
+    aws_access_key_id=aws_access_key,
+    aws_secret_access_key=aws_secret_key,
+    region_name=aws_region
+)
+        
+        ses.send_email(
+            Source='scdonnelly@scu.edu',  # Replace with your verified email
+            Destination={'ToAddresses': [email]},
+            Message={
+                'Subject': {'Data': 'Password Reset'},
+                'Body': {
+                    'Html': {
+                        'Data': f'<p>Click <a href="{reset_url}">here</a> to reset your password.</p>'
+                    }
+                }
+            }
+        )
+
+@app.route('/reset-password', methods=['POST'])
+def resetPassword():
+
+
         body = request.get_json()
         if not body:
             return "User did not provide data", 400
-        db = get_db()
-        
-        company = body['company']
-        full_name = body['full_name'],
-        assignment_name = body['assignment_name'],
-        score=Decimal(str(body['score']))
-        if not company:
-            return "User did not satisfy all requirements"
+        email = body.get('email')
+        if not email:
+            return "User did not provide email", 400
 
 
-        db.update_single_assignment(
-            company,
-            full_name,
-            assignment_name,
-            score
-        )
-        
-        return jsonify({"message": "Assignment score updated"}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400
+        bytes = password.encode('utf-8')
+        hash = bcrypt.hashpw(bytes, salt)
 
 
+        for user in users:
+            if user["email"] == email:
+                user["password"] = hash
+                return jsonify("Password reset")
 
 
-@app.route('/')
-def welcome():
-    return "Hello! :3"
-    
+        return jsonify("User not found")
+
 @app.route('/signup', methods=["POST"])
 def createUser():
     """
@@ -258,52 +312,6 @@ def findUser():
 
     return jsonify("User not found")
 
-@app.route('/forgot-password', methods=['POST'])
-def forgotpassword():
-    body = request.get_json()
-    email = body.get('email')
-
-    if not email:
-        return "Email required", 400
-
-    reset_url = f"http://localhost:3000/reset?token=abc123&email={email}"
-    send_reset_email(email, reset_url)
-
-    return jsonify("Reset email sent"), 200
-
-def send_reset_email(email, reset_url):
-    ses = boto3.client('ses',aws_access_key, aws_secret_key, aws_region)
-    
-    ses.send_email(
-        Source='scdonnelly@scu.edu',  # Replace with your verified email
-        Destination={'ToAddresses': [email]},
-        Message={
-            'Subject': {'Data': 'Password Reset'},
-            'Body': {
-                'Html': {
-                    'Data': f'<p>Click <a href="{reset_url}">here</a> to reset your password.</p>'
-                }
-            }
-        }
-    )
-
-
-@app.route('/createStudent', methods=['POST'])
-@tokenRequirement
-def addStudent():
-    body = request.get_json()
-    if not body:
-        return "User did not provide data", 400
-    name = body.get('name')
-    if not name:
-        return "User did not provide name", 400
-    points = body.get('points')
-    if not points:
-        points = 0
-    
-    #add student to database
-
-    return jsonify(name + " was added and currently has " + str(points) + " points"), 200
 
 if __name__ == '__main__':
     app.run(debug=True, port=3000)
