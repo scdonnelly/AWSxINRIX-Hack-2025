@@ -255,3 +255,67 @@ class StudentData:
             }
         )
 
+    def delete_student(self, company, full_name):
+        try:
+            response = self.table.delete_item(
+                Key={"company": company, "FullName": full_name}
+            )
+            return response
+        except ClientError as err:
+            logger.error(
+                "Couldn't delete student %s from table %s. Here's why: %s: %s",
+                full_name,
+                self.table.name,
+                err.response["Error"]["Code"],
+                err.response["Error"]["Message"],
+            )
+            raise
+    def calculate_total_for_events(self, company, full_name, event_names):
+        """
+        Calculate total score for specific events/assignments for one student
+        """
+        try:
+            student = self.get_data(company, full_name)
+            total = 0
+            
+            for event in event_names:
+                if event in student:
+                    score = student[event]
+                    if isinstance(score, (int, float)):
+                        total += score
+                    else:
+                        total += float(score)
+            
+            return total
+        except ClientError as err:
+            logger.error(f"Couldn't calculate total for {full_name}: {err}")
+            raise
+
+    def calculate_totals_for_all_students(self, company, event_names):
+        """
+        Calculate totals for specific events for all students in a company
+        """
+        try:
+            students = self.query_data(company)
+            results = []
+            
+            for student in students:
+                total = 0
+                for event in event_names:
+                    if event in student:
+                        score = student[event]
+                        if isinstance(score, (int, float)):
+                            total += score
+                        else:
+                            total += float(score)
+                
+                results.append({
+                    'name': student['FullName'],
+                    'total': total,
+                    'events': {event: student.get(event, 0) for event in event_names}
+                })
+            
+            return results
+        except ClientError as err:
+            logger.error(f"Couldn't calculate totals for company {company}: {err}")
+            raise
