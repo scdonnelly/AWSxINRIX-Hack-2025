@@ -1,7 +1,12 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from functools import wraps
+import jwt
+import datetime
 import requests
 import bcrypt
+
+
 
 #storing users in a list for now, will update to store in a database
 users = []
@@ -21,6 +26,25 @@ users.append(test_user)
 
 app = Flask(__name__)
 CORS(app)
+
+# I need this, but where do i store it if i can't share it?
+app.config["SECRET_KEY"] = 'secret-key' # change later lol
+
+def tokenRequirement(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = request.args.get('token')
+        if not token:
+            return jsonify("Missing authentication token"), 400
+
+        try:
+            data = jwt.decode(token, app.config["SECRET_KEY"])
+        except:
+            return jsonify("Token is missing or invalid"), 400
+
+        return f(*args, **kwargs)
+    return decorated
+
 
 @app.route('/')
 def welcome():
@@ -55,7 +79,7 @@ def createUser():
     
     return jsonify("Welcome " + username), 200
     
-@app.route('/login')
+@app.route('/login', methods=["POST"])
 def findUser():
     """
     username = request.form.get('user')
@@ -77,7 +101,8 @@ def findUser():
     for user in users:
         if user["username"] == username:
             if user["password"] == hash:
-                return jsonify("Login sucessful")
+                token = jwt.encode({'user': username, 'exp': datetime.datetime.now(datetime.timezone.utc)+datetime.timedelta(hours=24)},  app.config["SECRET_KEY"])
+                return jsonify(token)
             return jsonify("Password incorrect")
 
     return jsonify("User not found")
@@ -100,6 +125,7 @@ def findUser():
 # Delete an entire classroom (end of the year)
 
 @app.route('/createStudent')
+@tokenRequirement
 def addStudent():
     body = request.get_json()
     if not body:
