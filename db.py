@@ -106,17 +106,20 @@ class StudentData:
     #updatate single assignment score
     def update_single_assignment(self, company, full_name, assignment_name, score):
 
+        clean_name = assignment_name.replace("(", "").replace(")", "").replace(" ", "_")
+
         try:
-            response = self.table.update_item(
-                Key={"company": company, "FullName": full_name},
-                UpdateExpression=f"SET {assignment_name} = :score",
-                ExpressionAttributeValues={":score": score},
-                ReturnValues="UPDATED_NEW"
-            )
-            return response["Attributes"]
-        except ClientError as err:
-            logger.error(f"Couldn't update {assignment_name} for {full_name}: {err}")
-            raise
+        response = self.table.update_item(
+            Key={"company": company, "FullName": full_name},
+            UpdateExpression="SET #assignment_name = :score",
+            ExpressionAttributeNames={"#assignment_name": clean_name},
+            ExpressionAttributeValues={":score": score},
+            ReturnValues="UPDATED_NEW"
+        )
+        return response["Attributes"]
+    except ClientError as err:
+        logger.error(f"Couldn't update {assignment_name} for {full_name}: {err}")
+        raise
 
     
  #add new assignment column to all students
