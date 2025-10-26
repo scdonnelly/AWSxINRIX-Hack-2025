@@ -7,7 +7,6 @@ import requests
 import bcrypt
 
 
-
 #storing users in a list for now, will update to store in a database
 users = []
 
