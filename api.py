@@ -9,7 +9,20 @@ import boto3
 from db import StudentData
 from userinfo import UserData
 from decimal import Decimal
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
+
+aws_access_key = os.getenv('AWS_ACCESS_KEY_ID')
+aws_secret_key = os.getenv('AWS_SECRET_ACCESS_KEY')
+aws_region = os.getenv('AWS_DEFAULT_REGION')
+
+dynamodb = boto3.resource('dynamodb',
+    aws_access_key_id=aws_access_key,
+    aws_secret_access_key=aws_secret_key,
+    region_name=aws_region
+)
 
 #storing users in a list for now, will update to store in a database
 users = []
@@ -61,7 +74,7 @@ def tokenRequirement(f):
 
 
 @app.route('/students', methods=['POST'])
-@tokenRequirement
+
 def add_student():
     """Add a new student"""
     try:
@@ -69,17 +82,119 @@ def add_student():
         if not body:
             return "User did not provide data", 400
         db = get_db()
-        
+            
         db.add_StudentData(
-            company=data['company'],
-            firstName=data['firstName'],
-            lastName=data['lastName'],
-            attendance=data['attendance']
+            company=body['company'],
+            firstName=body['firstName'],
+            lastName=body['lastName'],
+            attendance=body['attendance']
         )
-        
+            
         return jsonify({"message": "Student added successfully"}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+    
+
+    
+@app.route('/students', methods=['GET'])
+def get_students():
+    """Get all students from a company"""
+    try:
+        db = get_db()
+        body = request.get_json()
+        if not body:
+            return "User did not provide data", 400
+        company = body['company']
+        if not company:
+            return "User did not specify a company", 400
+        
+        students = db.query_data(company)
+        
+        # Convert Decimal values to float for JSON
+        for student in students:
+            for key, value in student.items():
+                student[key] = decimal_to_float(value)
+        
+        return jsonify(students), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+    
+@app.route('/students', methods=['DELETE'])
+def delete_student():
+    """Delete a student"""
+    body = request.get_json()
+    if not body:
+        return "User did not provide data", 400
+    company = body['company']
+    if not company:
+        return "User did not specify company", 400
+    full_name = body['full_name']
+    try:
+        db = get_db()
+        db.delete_student(company, full_name)
+        return jsonify({"message": "Student deleted successfully"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+    
+@app.route('/assignments', methods=['POST'])
+def add_assignment():
+    """Add assignment column to all students"""
+    try:
+        body = request.get_json()
+        if not body:
+            return "User did not provide data", 400
+
+        assignment_name = str(body['assignment_name'])
+        if not assignment_name:
+            return "User did not name assignment", 400
+
+        default_score = Decimal(str(body['default_score']))
+
+        db = get_db()
+        if not default_score:
+            db.add_assignment_column(
+                assignment_name
+            )
+        else:
+            db.add_assignment_column(
+                assignment_name,
+                default_score
+            )
+        
+        return jsonify({"message": "Assignment column added"}), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400    
+    
+@app.route('/assignments/score', methods=['PUT'])
+def update_assignment_score():
+    """Update individual assignment score"""
+    try:
+        body = request.get_json()
+        if not body:
+            return "User did not provide data", 400
+        db = get_db()
+        
+        company = body['company']
+        full_name = body['full_name'],
+        assignment_name = body['assignment_name'],
+        score=Decimal(str(body['score']))
+        if not company:
+            return "User did not satisfy all requirements"
+
+
+        db.update_single_assignment(
+            company,
+            full_name,
+            assignment_name,
+            score
+        )
+        
+        return jsonify({"message": "Assignment score updated"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
+
 
 @app.route('/')
 def welcome():
