@@ -82,18 +82,12 @@
 }
 
 /* --- 3. Image Placeholder --- */
-.hero-image-placeholder {
+.hero-image {
   flex: 1; /* Takes up the other half */
   max-width: 500px;
-  height: 400px;
-  background-color: #e9ecef; /* Placeholder color */
-  border-radius: var(--border-radius);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #aaa;
-  font-size: 1.5rem;
-  font-weight: 600;
+  height: auto; /* Lets height adjust automatically */
+  border-radius: 8px; /* Matches your design */
+  object-fit: cover; /* Prevents image from stretching */
 }
 
 /* --- 4. Reusable Button Styles --- */
