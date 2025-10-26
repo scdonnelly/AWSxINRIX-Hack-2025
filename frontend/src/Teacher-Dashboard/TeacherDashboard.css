@@ -239,14 +239,49 @@
   text-decoration: underline;
 }
 
-/* --- Students Tab Table Styles --- */
-.students-tab h3 {
-  font-size: 1.5rem;
-  color: var(--text-dark, #222);
-  margin-top: 0;
+/* --- Student Tab Header & Filter --- */
+.student-tab-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 20px;
 }
 
+.student-tab-header h3 {
+  font-size: 1.5rem;
+  color: var(--text-dark, #222);
+  margin: 0;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filter-group label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-light, #555);
+}
+
+.filter-group select {
+  font-size: 0.95rem;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: var(--bg-white, #ffffff);
+  cursor: pointer;
+}
+
+.filter-group select:focus {
+  outline: none;
+  border-color: var(--primary-color, #007bff);
+  box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+}
+
+
+/* --- Students Tab Table Styles --- */
 .students-table {
   width: 100%;
   border-collapse: collapse; 
@@ -303,19 +338,6 @@
 .action-button.remove:hover {
   background-color: #fbeaea;
   color: #b92015;
-}
-
-.action-button.note {
-  background-color: #f0f5ff; 
-  color: #4285f4; 
-}
-.action-button.note:hover {
-  background-color: #e6f0ff;
-}
-
-.no-note {
-  color: #999; 
-  font-style: italic;
 }
 
 
@@ -409,22 +431,102 @@
   background-color: #e0e0e0; 
 }
 
-/* --- Note Modal Styles --- */
-.note-modal {
-  max-width: 400px; 
+
+/* --- NEW: Attendance Tab Styles --- */
+
+.attendance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
-.note-content {
-  font-size: 1.1rem;
-  line-height: 1.6;
-  color: var(--text-dark, #333);
-  background-color: var(--bg-light, #f9f9f9);
-  padding: 15px;
+.attendance-header h2 {
+  font-size: 1.5rem;
+  color: var(--text-dark, #222);
+  margin: 0;
+}
+
+/* Make attendance table text centered */
+.attendance-table th,
+.attendance-table td {
+  text-align: left;
+  vertical-align: middle;
+}
+
+.attendance-table th:first-child,
+.attendance-table td:first-child {
+  padding-left: 20px; /* More padding for the name */
+}
+
+/* --- NEW: Colored Attendance Dropdown --- */
+.attendance-dropdown {
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 8px 12px;
   border-radius: 6px;
-  min-height: 100px;
-  white-space: pre-wrap; 
+  border: 2px solid #ccc;
+  transition: all 0.3s;
+  cursor: pointer;
+  -webkit-appearance: none; /* Removes default OS styling */
+  -moz-appearance: none;
+  appearance: none;
+  /* Add a custom arrow */
+  background-image: url('data:image/svg+xml;utf8,<svg fill="%23333" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 24px;
 }
 
-.note-modal .modal-buttons {
-  justify-content: center;
+/* Green */
+.attendance-dropdown[data-status="present"] {
+  background-color: #f0fff4;
+  color: #2f855a;
+  border-color: #9ae6b4;
+}
+
+/* Yellow */
+.attendance-dropdown[data-status="excused"] {
+  background-color: #fffbeb;
+  color: #b7791f;
+  border-color: #f6e05e;
+}
+
+/* Red */
+.attendance-dropdown[data-status="unexcused"] {
+  background-color: #fff5f5;
+  color: #c53030;
+  border-color: #fc8181;
+}
+
+
+/* --- NEW: Bonus Points Button Style --- */
+.action-button.bonus {
+  background-color: #f0f5ff; /* A light, neutral blue */
+  color: #4285f4; /* A brighter, friendly blue */
+  font-weight: 600;
+}
+.action-button.bonus:hover {
+  background-color: #e6f0ff;
+}
+
+/* --- NEW: Submit Button --- */
+.submit-attendance-btn {
+  /* Use the same style as "Create Class" button */
+  padding: 12px 25px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  background-color: var(--primary-color, #007bff); 
+  color: var(--bg-white, #ffffff);
+  border: none;
+  border-radius: var(--border-radius, 8px);
+  cursor: pointer;
+  transition: background-color 0.3s;
+  display: block; /* Make it a block */
+  margin-top: 25px;
+  margin-left: auto; /* Push it to the right */
+}
+
+.submit-attendance-btn:hover {
+  background-color: var(--primary-hover, #0056b3);
 }

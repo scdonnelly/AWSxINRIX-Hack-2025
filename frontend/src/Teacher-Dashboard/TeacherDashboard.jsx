@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './TeacherDashboard.css';
-// 1. UPDATED ICON IMPORT
-import { FiFileText, FiUsers, FiClipboard, FiBarChart2, FiCheckSquare } from 'react-icons/fi'; 
+// 1. IMPORT THE NEW ICON
+import { FiUsers, FiClipboard, FiBarChart2, FiCheckSquare, FiPlusCircle } from 'react-icons/fi'; 
 
 const TeacherDashboard = () => {
   // --- States ---
@@ -13,16 +13,38 @@ const TeacherDashboard = () => {
     { id: 2, name: 'Spring 2026 Cohort' },
   ]);
   const [selectedClass, setSelectedClass] = useState(classes[0]);
-  const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
-  const [selectedNote, setSelectedNote] = useState('');
   const [activeTab, setActiveTab] = useState('home');
+  const [companyFilter, setCompanyFilter] = useState('all');
 
-  // --- Mock Data ---
+  // --- UPDATED: Mock Data with Company ---
   const mockStudents = [
-    { id: 101, name: 'Sara Lee', attendance: '95%', points: 120, notes: 'Peanut allergy. EpiPen in bag.' },
-    { id: 102, name: 'Espy Chen', attendance: '100%', points: 150, notes: '' }, // No note
-    { id: 103, name: 'Faith Kim', attendance: '85%', points: 80, notes: 'Needs extra time on tests (per 504 plan).' },
+    { id: 101, name: 'Sara Lee', attendance: '95%', points: 120, company: 'Adobe' },
+    { id: 102, name: 'Espy Chen', attendance: '100%', points: 150, company: 'AWS' },
+    { id: 103, name: 'Faith Kim', attendance: '85%', points: 80, company: 'DaVita' },
+    { id: 104, name: 'Frodo Baggins', attendance: '90%', points: 110, company: 'IMA' },
+    { id: 105, name: 'Bo Peep', attendance: '100%', points: 130, company: 'Adobe' },
+    { id: 106, name: 'Sven Reindeer', attendance: '75%', points: 60, company: 'Accenture' },
+    { id: 107, name: 'Jessie Cowgirl', attendance: '98%', points: 140, company: 'Guild' },
   ];
+  
+  const companyList = [...new Set(mockStudents.map(s => s.company))].sort();
+
+  // --- 2. NEW: MOCK DATA & STATE FOR ATTENDANCE ---
+  const mockEvents = [
+    { id: 'event1', name: 'September Field Day 9/3' },
+    { id: 'event2', name: 'HighView Orientation 9/17' },
+    { id: 'event3', name: 'October PD: Communication 10/22' },
+  ];
+
+  const [selectedEvent, setSelectedEvent] = useState(mockEvents[0].id); // Default to first event
+  
+  // Create an initial state for attendance. e.g., { 101: 'present', 102: 'present', ... }
+  const [attendanceData, setAttendanceData] = useState(
+    mockStudents.reduce((acc, student) => {
+      acc[student.id] = 'present'; // Default everyone to 'present'
+      return acc;
+    }, {})
+  );
 
   // --- Handlers ---
   const handleCreateClass = () => setIsModalOpen(true);
@@ -37,27 +59,35 @@ const TeacherDashboard = () => {
     setNewSubject('Main Subject');
   };
 
-  const handleOpenNote = (note) => {
-    setSelectedNote(note);
-    setIsNoteModalOpen(true);
+  // --- 3. NEW: HANDLERS FOR ATTENDANCE PAGE ---
+  const handleAttendanceChange = (studentId, status) => {
+    setAttendanceData(prevData => ({
+      ...prevData,
+      [studentId]: status,
+    }));
   };
 
-  const handleCloseNote = () => {
-    setIsNoteModalOpen(false);
-    setSelectedNote('');
+  const handleAddBonusPoints = (studentId) => {
+    // We'll wire this up to a modal later
+    console.log(`Opening bonus points modal for student ${studentId}...`);
+  };
+
+  const handleSubmitAttendance = () => {
+    // In a real app, you'd send this data to your backend
+    console.log('Submitting attendance for event:', selectedEvent);
+    console.log(attendanceData);
+    alert('Attendance submitted successfully!'); // Simple confirmation
   };
 
   return (
     <div className="dashboard-container">
       
-      {/* --- 1. Left Column: Navigation Pane --- */}
+      {/* --- Left Column: Navigation Pane (No changes) --- */}
       <div className="nav-pane">
         <h1 className="nav-logo">HighView</h1>
-        
         <button className="create-class-btn" onClick={handleCreateClass}>
           + Create New Class
         </button>
-
         <h3 className="class-list-title">Your Classes</h3>
         <div className="class-list">
           {classes.map((cls) => (
@@ -72,7 +102,7 @@ const TeacherDashboard = () => {
         </div>
       </div>
 
-      {/* --- 2. Right Column: Main Content Display --- */}
+      {/* --- Right Column: Main Content Display (No changes) --- */}
       <div className="content-pane">
         
         <header className="content-header">
@@ -91,7 +121,7 @@ const TeacherDashboard = () => {
         
         <main className="content-main">
           
-          {/* --- Home Hub (Big Buttons) --- */}
+          {/* --- Home Hub (No changes) --- */}
           {activeTab === 'home' && (
             <div className="dashboard-hub">
               <button 
@@ -115,7 +145,6 @@ const TeacherDashboard = () => {
                 <FiBarChart2 size={40} />
                 <span>View Leaderboard</span>
               </button>
-              {/* --- 2. THIS BUTTON IS NOW "EVENTS" --- */}
               <button 
                 className="hub-button" 
                 onClick={() => setActiveTab('events')}
@@ -126,64 +155,141 @@ const TeacherDashboard = () => {
             </div>
           )}
 
-          {/* --- Students Tab --- */}
+          {/* --- Students Tab (No changes) --- */}
           {activeTab === 'students' && (
             <div className="students-tab">
               <button className="back-button" onClick={() => setActiveTab('home')}>
                 &larr; Back to Dashboard Home
               </button>
-              <h3>Student Roster</h3>
+
+              <div className="student-tab-header">
+                <h3>Student Roster</h3>
+                <div className="filter-group">
+                  <label htmlFor="companyFilter">Filter by Company:</label>
+                  <select 
+                    id="companyFilter" 
+                    value={companyFilter} 
+                    onChange={(e) => setCompanyFilter(e.target.value)}
+                  >
+                    <option value="all">All Companies</option>
+                    {companyList.map(company => (
+                      <option key={company} value={company}>
+                        {company}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
               <table className="students-table">
-                {/* ... (table code is unchanged) ... */}
                 <thead>
                   <tr>
                     <th>Name</th>
+                    <th>Company</th>
                     <th>Attendance %</th>
                     <th>Bonus Points</th>
-                    <th>Health Notes</th>
                     <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {mockStudents
+                    .filter(student => 
+                      companyFilter === 'all' || student.company === companyFilter
+                    )
+                    .map((student) => (
+                      <tr key={student.id}>
+                        <td>{student.name}</td>
+                        <td>{student.company}</td>
+                        <td>{student.attendance}</td>
+                        <td>{student.points}</td>
+                        <td>
+                          <button className="action-button remove">
+                            Remove Student
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* --- 4. UPDATED: Attendance Tab --- */}
+          {activeTab === 'attendance' && (
+            <div className="attendance-tab">
+              <button className="back-button" onClick={() => setActiveTab('home')}>
+                &larr; Back to Dashboard Home
+              </button>
+              
+              <div className="attendance-header">
+                <h2>Take Attendance</h2>
+                <div className="filter-group">
+                  <label htmlFor="eventFilter">Select Event:</label>
+                  <select 
+                    id="eventFilter" 
+                    value={selectedEvent} 
+                    onChange={(e) => setSelectedEvent(e.target.value)}
+                  >
+                    {mockEvents.map(event => (
+                      <option key={event.id} value={event.id}>
+                        {event.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <table className="students-table attendance-table">
+                <thead>
+                  <tr>
+                    <th>Student Name</th>
+                    <th>Attendance Status</th>
+                    <th>Add Bonus Points</th>
                   </tr>
                 </thead>
                 <tbody>
                   {mockStudents.map((student) => (
                     <tr key={student.id}>
+                      {/* --- Student Name --- */}
                       <td>{student.name}</td>
-                      <td>{student.attendance}</td>
-                      <td>{student.points}</td>
+                      
+                      {/* --- Attendance Dropdown --- */}
                       <td>
-                        {student.notes ? (
-                          <button 
-                            className="action-button note"
-                            onClick={() => handleOpenNote(student.notes)}
-                          >
-                            <FiFileText /> View Note
-                          </button>
-                        ) : (
-                          <span className="no-note">—</span>
-                        )}
+                        <select
+                          className="attendance-dropdown"
+                          value={attendanceData[student.id]}
+                          onChange={(e) => handleAttendanceChange(student.id, e.target.value)}
+                          // This applies the color class based on the value
+                          data-status={attendanceData[student.id]}
+                        >
+                          <option value="present">Present</option>
+                          <option value="excused">Excused Absence</option>
+                          <option value="unexcused">Unexcused Absence</option>
+                        </select>
                       </td>
+                      
+                      {/* --- Bonus Points Button --- */}
                       <td>
-                        <button className="action-button remove">
-                          Remove Student
+                        <button 
+                          className="action-button bonus"
+                          onClick={() => handleAddBonusPoints(student.id)}
+                        >
+                          <FiPlusCircle /> Add Points
                         </button>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
+              
+              <button className="submit-attendance-btn" onClick={handleSubmitAttendance}>
+                Submit Attendance
+              </button>
+
             </div>
           )}
 
-          {/* --- Other Tab Placeholders --- */}
-          {activeTab === 'attendance' && (
-            <div>
-              <button className="back-button" onClick={() => setActiveTab('home')}>
-                &larr; Back to Dashboard Home
-              </button>
-              <h2>Attendance Content</h2>
-              <p>This is where the attendance form will go.</p>
-            </div>
-          )}
+          {/* --- Other Tab Placeholders (No changes) --- */}
           {activeTab === 'leaderboard' && (
             <div>
               <button className="back-button" onClick={() => setActiveTab('home')}>
@@ -193,7 +299,6 @@ const TeacherDashboard = () => {
               <p>This is where the leaderboard will go.</p>
             </div>
           )}
-          {/* --- 3. THIS PLACEHOLDER IS NOW "EVENTS" --- */}
           {activeTab === 'events' && (
             <div>
               <button className="back-button" onClick={() => setActiveTab('home')}>
@@ -207,13 +312,12 @@ const TeacherDashboard = () => {
         </main>
       </div>
 
-      {/* --- Create Class Modal --- */}
+      {/* --- Create Class Modal (No changes) --- */}
       {isModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content">
             <h2>Create New Class</h2>
             <form onSubmit={handleCreateSubmit} className="modal-form">
-              {/* ... (rest of modal form is unchanged) ... */}
               <div className="modal-form-group">
                 <label htmlFor="className">Class Name</label>
                 <input
@@ -260,25 +364,7 @@ const TeacherDashboard = () => {
         </div>
       )}
       
-      {/* --- Health Note Modal --- */}
-      {isNoteModalOpen && (
-        <div className="modal-overlay" onClick={handleCloseNote}>
-          <div className="modal-content note-modal" onClick={(e) => e.stopPropagation()}>
-            <h2>Student Health Note</h2>
-            <p className="note-content">{selectedNote}</p>
-            <div className="modal-buttons">
-              <button
-                type="button"
-                className="modal-button primary"
-                onClick={handleCloseNote}
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
+      {/* --- REMOVED: Health Note Modal --- */}
     </div>
   );
 };
