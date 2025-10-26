@@ -28,19 +28,20 @@ app = Flask(__name__)
 CORS(app)
 
 # I need this, but where do i store it if i can't share it?
-app.config["SECRET_KEY"] = 'secret-key' # change later lol
+app.config["SECRET_KEY"] = 'thisIsTheSecretKey' # change later lol
 
 def tokenRequirement(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         token = request.args.get('token')
+        key = str(request.args.get('key'))
         if not token:
             return jsonify("Missing authentication token"), 400
 
         try:
-            data = jwt.decode(token, app.config["SECRET_KEY"])
+            data = jwt.decode(token, key, algorithms=["HS256"])
         except:
-            return jsonify("Token is missing or invalid"), 400
+            return jsonify("Token is invalid"), 400
 
         return f(*args, **kwargs)
     return decorated
@@ -85,6 +86,7 @@ def findUser():
     username = request.form.get('user')
     password = request.form.get('password')
     """
+    key = str(request.args.get('key'))
     body = request.get_json()
     if not body:
         return "User did not provide data", 400
@@ -101,7 +103,7 @@ def findUser():
     for user in users:
         if user["username"] == username:
             if user["password"] == hash:
-                token = jwt.encode({'user': username, 'exp': datetime.datetime.now(datetime.timezone.utc)+datetime.timedelta(hours=24)},  app.config["SECRET_KEY"])
+                token = jwt.encode({'user': username, 'exp': datetime.datetime.now(datetime.timezone.utc)+datetime.timedelta(hours=24)}, key)
                 return jsonify(token)
             return jsonify("Password incorrect")
 
