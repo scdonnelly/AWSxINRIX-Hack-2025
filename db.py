@@ -3,7 +3,7 @@ class StudentData:
         "company": 'AWS';
         "FirstName": 'John';
         "LastName": 'Doe';
-        "assignment": 
+
 
     }
     """Encapsulates an Amazon DynamoDB table of movie data.
@@ -71,3 +71,35 @@ class StudentData:
             raise
         else:
             return self.table
+
+    def add_StudentData(company, firstName, lastName):
+        """
+        Adds a student record
+
+        :param title: The title of the movie.
+        :param year: The release year of the movie.
+        :param plot: The plot summary of the movie.
+        :param rating: The quality rating of the movie.
+        """
+
+       
+
+
+
+        try:
+            self.table.put_item(
+                Item={
+                    "year": year,
+                    "title": title,
+                    "info": {"plot": plot, "rating": Decimal(str(rating))},
+                }
+            )
+        except ClientError as err:
+            logger.error(
+                "Couldn't add movie %s to table %s. Here's why: %s: %s",
+                title,
+                self.table.name,
+                err.response["Error"]["Code"],
+                err.response["Error"]["Message"],
+            )
+            raise
